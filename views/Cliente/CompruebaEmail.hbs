@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cambio de contrasena</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <img src="../../public/images/cabecera.png">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3><strong>Recordar Contraseña</strong></h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p>Introduzca el correo electrónico con el que se registró en nuestro sistema, le enviaremos un correo desde el que podra cambiar su contraseña:</p>
+            </div>
+        </div>
+        {{#if mensajeError}}
+            <div class="row">
+                <div class="col">
+                    <span class="text-danger">{{mensajeError}}</span>
+                </div>
+            </div>
+        {{/if}}
+        <form method="post" action="http://localhost:3000/Cliente/CompruebaEmail">
+            <div class="form-group">
+                <label for="email"><strong>Correo Electronico:</strong></label>
+                <input id="email" type="email" name="email" class="form-control" placeholder="Su email " />
+                <br />
+                <input type="submit" value="Enviar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</body>
+</html>

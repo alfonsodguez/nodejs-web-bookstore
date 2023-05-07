@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>registro Agapea</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>    
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <img src="/public/images/cabecera.png">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2><strong>Registro en agapea.com</strong></h2>
+                <p>Tienes tres opciones para registrarte en Agapea.com. Puedes hacerlo a través de las redes sociales Facebook o Google en 4 segundos. También puedes registrarte con nosotros en menos de 40 segundos. Tan solo rellena el formulario con tus datos.</p>
+                <hr>
+                <p>En ambos casos, recibirás un correo electrónico en tu cuenta con un enlace con el que confirmarás tus datos, y estarás disfrutando de nuestros servicios y ventajas. </p>
+            </div>
+        </div>
+        <!-- pasamos a la vista el mensaje de error caundo falla al grabar en mongodb-->
+        {{#if mensajeError}}
+            <div class="row">
+                <div class="col">
+                    <span class="text-danger">{{mensajeError}}</span>
+                </div>
+            </div>
+        {{/if }}
+        <div class="row">
+            <div class="col">
+                <form method="POST" action="http://localhost:3000/Cliente/Registro">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Datos de Mi Perfil...</h5>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="usernick"><strong>Usuario (nickname)</strong></label>
+                                    <input type="text" class="form-control" id="usernick" name="login" placeholder="escribe aqui tu nick...">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputEmail"><strong>Correo Electronico</strong></label>
+                                    <input type="email" class="form-control" id="inputEmail" name="email" placeholder="escribe aqui tu email...">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputPassword"><strong>Escribe cual sera tu contraseña</strong></label>
+                                    <input type="password" name="password" class="form-control" id="inputPassword" placeholder="escribe tu password...">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="reinputPassword"><strong>Repite la contraseña</strong></label>
+                                    <input type="password" class="form-control" id="reinputPassword" placeholder="Password">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Datos de Personales...</h5>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputNombre"><strong>Mi Nombre es:</strong></label>
+                                    <input type="text" name="nombre" class="form-control" id="inputNombre" placeholder="introduce tu nombre...">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputApellidos"><strong>Mis Apellidos son:</strong></label>
+                                    <input type="text" name="apellidos" class="form-control" id="inputApellidos" placeholder="introduce tus apellidos...">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputNIF"><strong>NIF:</strong></label>
+                                    <input type="text" name="nif" class="form-control" id="inputNIF" placeholder="introduce tu NIF...">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputTelefono"><strong>un telefono de contacto:</strong></label>
+                                    <input type="text" name="telefono" class="form-control" id="inputTelefono" placeholder="introduce telefono de contacto...">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputAddress"><strong>Direccion de envio:</strong></label>
+                                <input type="text" name="calle" class="form-control" id="inputAddress" placeholder="c/nombre calle, numero, piso-letra">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="inputProvincia"><strong>Provincia</strong></label>
+                                    <select id="inputProvincia" name="codPro" class="form-control">
+                                        <option value="0" selected>Elige provincia...</option>                                         
+                                            {{#each listaProvincias as |unaprov|}}
+                                                <option value="{{unaprov.codPro}}">{{unaprov.NombreProvincia}}</option>
+                                            {{/each}}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputLocalidad"><strong>Localidad</strong></label>
+                                    <select id="inputLocalidad" name="codMun" class="form-control" disabled>
+                                        <option value="0" selected>Elige localidad...</option>
+                                            <option>...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label for="inputCP"><strong>CP</strong></label>
+                                    <input type="text" name="cp" class="form-control" id="inputCP">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="checkCondicionesUso">
+                            <label class="form-check-label" for="checkCondicionesUso">
+                            Acepto las Condiciones de uso y nuestra Politica de Cookies
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"  >REGISTRARME</button>
+                </form>
+            </div>
+        </div>
+    </div>  
+    <script>
+        $('#inputProvincia').change(function(evt) {
+            $('#inputLocalidad > option').each((index, elem) => {
+                if (elem.value!=0 ) { 
+                    elem.remove()
+                }
+            })            
+            if (evt.target.value !=0) {
+                $('#inputLocalidad').prop("disabled", false);
+
+                fetch('http://localhost:3000/api/getMunicipios/' +$(this).val(), {method: 'get'}) 
+                    .then(bodyMunicipios => bodyMunicipios.json()) 
+                    .then(municipios => municipios.forEach(municipio => { 
+                        //construimos tags option
+                        $('#inputLocalidad').append(`<option value=${municipio.codMun}>${municipio.NombreMunicipio}</option>`);
+                    })) 
+                    .catch(error=>console.log('error munis',error));
+            }           
+        })
+
+        //------------------------------ validaciones -------------------------------
+        var cajaEmail = document.getElementById('inputEmail');
+        cajaEmail.addEventListener('blur', validarEmail);
+        function validarEmail(ev) {
+            var success = true;
+            if(ev.target.value == ''){
+                success = false;
+            }
+            if ( /^.*@.*\.(com|es|uk|it|org)$/.test(ev.target.value) == false) {
+                success = false;
+            }
+            if (success == false) {
+                //borramas etiqueta span en caso de que exista 
+                if(ev.target.nextElementSibling != null){
+                    ev.target.nextElementSibling.remove();
+                }					
+                //añadimos etiqueta span
+                var textoError = document.createElement('span');
+                textoError.textContent= '* Campo obligatorio';
+                textoError.setAttribute('style', 'color: red');
+                ev.target.after(textoError);
+            }
+            else if (success) {
+                //campo bien validado
+                //eliminamos etiqueta span si existe
+                if(ev.target.nextElementSibling != null){
+                    ev.target.nextElementSibling.remove();
+                }														
+            }
+        };
+
+        var cajaPassword = document.getElementById('inputPassword');
+        cajaPassword.addEventListener('blur', validarPassword);
+        function validarPassword(ev) {
+            var validated = true;
+            
+            const isWhitespace = /^(?=.*\s)/;
+            if (isWhitespace.test(ev.target.value)) {
+                console.log("La contraseña no debe contener espacios en blanco.");
+                validated = false;
+            }
+        
+            const isContainsUppercase = /^(?=.*[A-Z])/;
+            if (!isContainsUppercase.test(ev.target.value)) {
+                console.log("La contraseña debe tener al menos un caracter en mayuscula.");
+                validated = false;
+            }
+        
+            const isContainsLowercase = /^(?=.*[a-z])/;
+            if (!isContainsLowercase.test(ev.target.value)) {
+                console.log("La contraseña debe tener al menos un carácter en minúscula.");
+                validated = false;
+            }
+        
+            const isContainsNumber = /^(?=.*[0-9])/;
+            if (!isContainsNumber.test(ev.target.value)) {
+                console.log("La contraseña debe contener al menos un dígito.");
+                validated = false;
+            }
+        
+            const isContainsSymbol = /^(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹])/;
+            if (!isContainsSymbol.test(ev.target.value)) {
+                console.log("La contraseña debe contener al menos un símbolo especial.");
+                validated = false;
+            }
+        
+            const isValidLength = /^.{8,16}$/;
+            if (!isValidLength.test(ev.target.value)) {
+                console.log("La contraseña debe tener entre 8 y 16 caracteres.");
+                validated = false;
+            }
+            
+            if (validated == false) {
+                //si existe etiqueta span la borramos 
+                if(ev.target.nextElementSibling != null){
+                    ev.target.nextElementSibling.remove();
+                }		
+                //añadimos etiqueta span
+                var textoError = document.createElement('span');
+                textoError.textContent= '* Password incorrecta';
+                textoError.setAttribute('style', 'color: red');
+                ev.target.after(textoError);
+            }
+            //comprobamos que no hay etiqueta span
+            else if (validated)
+            {
+                //si existe etiqueta span la borramos 
+                if(ev.target.nextElementSibling != null){
+                    ev.target.nextElementSibling.remove();
+                }							
+            }
+        }
+
+        //añadimos un listener a todos los campos
+        var cajasTexto = document.getElementsByTagName('input'); 
+        Array
+            .from(cajasTexto)
+            .forEach(caja => caja.addEventListener('blur',validarCampos))
+        function validarCampos(ev) {
+            if(ev.target.getAttribute('type') == 'text'){
+                //comprobamos si tiene texto 
+                if(ev.target.value == ""){
+                    //comprobamos si existe etiqueta span
+                    if (ev.target.nextElementSibling != null) {
+                        ev.target.nextElementSibling.remove();
+                    }
+                    var textoError = document.createElement('span');
+                    textoError.textContent= '* Campo Obligatorio';
+                    textoError.setAttribute('style', 'color: red');
+                    ev.target.after(textoError);
+                }
+                else if (ev.target.nextElementSibling != null) {
+                    //el campo esta bien validado 
+                    ev.target.nextElementSibling.remove();
+                }
+            }               
+            //compruebo el numero de campos validados 
+            var numIncorrect = Array
+                .from(cajasTexto)
+                .filter(input => input.value.toString().length === 0)
+                .length
+
+            //etiquetas de span hay
+            console.log(numIncorrect);			  
+            if (numIncorrect > 0) {
+                //deshabilitamos boton
+                document.getElementById('botonSubmit').disabled = true;
+            }
+            else {
+                //habilitamos boton
+                document.getElementById('botonSubmit').disabled = false;
+            }
+        };
+    </script>           
+</body>
+</html> 

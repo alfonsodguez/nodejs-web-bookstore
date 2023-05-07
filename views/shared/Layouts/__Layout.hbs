@@ -1,0 +1,102 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>registro Agapea</title>
+    <!-- importamos bootstrap-->
+    <!--  estilos y librerias .js bootstrap-->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>    
+
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body>
+     <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-9" style="background-color:black"></div>
+                <div class="col-3" style="background-color:black">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                        <a href="#" class="btn btn-dark btn-sm">
+                            <img src="/public/images/botonMINIcontacto.png">
+                        </a>
+                        {{#if this.cliente}}
+                            <a href="http://localhost:3000/Cliente/Panel/MiPerfil" class="btn btn-dark btn-lg">
+                                Mi Cuenta, {{this.cliente.credenciales.email}}
+                            </a>
+                        {{else}}
+                            <a href="http://localhost:3000/Cliente/Login" class="btn btn-dark btn-sm">
+                                <img src="/public/images/botonMINIlogin.png">
+                            </a>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="background-color:rgb(237,237,237)">
+                <div class="col-md-4">
+                    <img src="/public/images/logo_Agapea_layout.png" />
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Buscar por libro,autor,iSBN..." aria-label="Buscar por libro,autor,iSBN..." aria-describedby="botonBuscar">
+                        <div class="input-group-append">
+                            <a class="btn btn-outline-primary" id="botonBuscar" href="http://localhost:3000/Tienda/BuscarLibros">
+                                <img src="/public/images/boton_BuscarLibros.png" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <a href="http://localhost:3000/Tienda/MostrarPedido" class="btn btn-light">
+                        <img src="/public/images/boton_mini_carrito.png" />
+                        <span class="badge badge-danger">0</span>
+                        <small>Total:</small>
+                        <img src="/public/images/boton_flecha_minicarrito.png" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+                {{#unless this.listaOpcCliente}} 
+                    <div class="list-group">
+                        {{#each this.listaMaterias as |unamateria| }}
+                            <a class="list-group-item list-group-item-action"
+                               href="http://localhost:3000/Tienda/Libros/{{unamateria.idMateria}}">
+                                {{split unamateria.NombreMateria ';' 0}}    
+                            </a>
+                        {{/each}}
+                    </div>
+                {{else}}
+                    <div class="list-group">
+                        {{#each this.listaOpcCliente as |opcCliente| }}
+                            <a class="list-group-item list-group-item-action" href="http://localhost:3000/Cliente/Panel/{{split opcCliente '-' 1}}">
+                                {{split opcCliente '-' 0}}    
+                            </a>
+                        {{/each}}
+                    </div>
+                {{/unless}}
+            </div>
+            <div class="col-10">
+                {{{ body }}}
+            </div>
+        </div>
+    </div>
+ <footer class="border-top footer text-muted">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <small>&copy;  Agapea CLASE S.A. 2020. Reservados todos los derechos </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html

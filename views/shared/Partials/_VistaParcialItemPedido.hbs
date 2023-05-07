@@ -1,0 +1,29 @@
+<table class="table table-borderless">
+    <tr>
+        <td>
+            <img src="/public/images/imagenLibro.png"/>
+        </td>
+        <td><label><h4>{{this.libroItem.titulo}}</h4></label></td>
+        <td>
+            <a href="http://localhost:3000/Pedido/EliminarLibroPedido/{{this.libroItem._id}}" style="color: red;" class="btn btn-light">
+                <strong>X</strong>
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="http://localhost:3000/Pedido/RestarCantidadPedido/{{this.libroItem._id}}" 
+               id="botonMenos-{{this.libroItem._id}}" class="btn btn-primary"> - 
+            </a>
+            <label id="ID-{{this.libroItem._id}}">{{this.cantidadItem}}</label>
+            <a href="http://localhost:3000/Pedido/SumarCantidadPedido/{{this.libroItem._id}}"
+               id="botonMas-{{this.libroItem._id}}" class="btn btn-primary"> + 
+            </a>
+            <label>x</label>
+            <label style="color: red;">{{this.libroItem.precio}} €</label>
+        </td>
+        <td>
+            <label style="color: red;">{{operacion this.cantidadItem '*' this.libroItem.precio}}</label>
+        </td>
+    </tr>
+</table>

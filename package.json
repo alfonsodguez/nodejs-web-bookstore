@@ -1,0 +1,26 @@
+{
+  "name": "nodejs-web-bookstore",
+  "version": "1.0.0",
+  "description": "Example of bookstore web application using the Nodejs-Express technology",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "connect-mongo": "^4.6.0",
+    "cookie-parser": "^1.4.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.3.4",
+    "express-session": "^1.17.2",
+    "mongoose": "^6.0.12",
+    "multer": "^1.4.4",
+    "node-mailjet": "^6.0.2",
+    "pdfkit-table": "^0.1.99",
+    "serve-favicon": "^2.5.0",
+    "winston": "^3.8.2"
+  }
+}
