@@ -147,10 +147,10 @@
         })
 
         //------------------------------ validaciones -------------------------------
-        var cajaEmail = document.getElementById('inputEmail');
+        const cajaEmail = document.getElementById('inputEmail');
         cajaEmail.addEventListener('blur', validarEmail);
         function validarEmail(ev) {
-            var success = true;
+            let success = true;
             if(ev.target.value == ''){
                 success = false;
             }
@@ -163,7 +163,7 @@
                     ev.target.nextElementSibling.remove();
                 }					
                 //añadimos etiqueta span
-                var textoError = document.createElement('span');
+                const textoError = document.createElement('span');
                 textoError.textContent= '* Campo obligatorio';
                 textoError.setAttribute('style', 'color: red');
                 ev.target.after(textoError);
@@ -177,10 +177,10 @@
             }
         };
 
-        var cajaPassword = document.getElementById('inputPassword');
+        const cajaPassword = document.getElementById('inputPassword');
         cajaPassword.addEventListener('blur', validarPassword);
         function validarPassword(ev) {
-            var validated = true;
+            let validated = true;
             
             const isWhitespace = /^(?=.*\s)/;
             if (isWhitespace.test(ev.target.value)) {
@@ -224,7 +224,7 @@
                     ev.target.nextElementSibling.remove();
                 }		
                 //añadimos etiqueta span
-                var textoError = document.createElement('span');
+                const textoError = document.createElement('span');
                 textoError.textContent= '* Password incorrecta';
                 textoError.setAttribute('style', 'color: red');
                 ev.target.after(textoError);
@@ -240,7 +240,7 @@
         }
 
         //añadimos un listener a todos los campos
-        var cajasTexto = document.getElementsByTagName('input'); 
+        const cajasTexto = document.getElementsByTagName('input'); 
         Array
             .from(cajasTexto)
             .forEach(caja => caja.addEventListener('blur',validarCampos))
@@ -252,7 +252,7 @@
                     if (ev.target.nextElementSibling != null) {
                         ev.target.nextElementSibling.remove();
                     }
-                    var textoError = document.createElement('span');
+                    const textoError = document.createElement('span');
                     textoError.textContent= '* Campo Obligatorio';
                     textoError.setAttribute('style', 'color: red');
                     ev.target.after(textoError);
@@ -263,7 +263,7 @@
                 }
             }               
             //compruebo el numero de campos validados 
-            var numIncorrect = Array
+            const numIncorrect = Array
                 .from(cajasTexto)
                 .filter(input => input.value.toString().length === 0)
                 .length

@@ -12,7 +12,7 @@ module.exports = {
             //recuperar session y añadir libro expandido al pedido
             const pedido = new Pedido(req.session.cliente.pedidoActual); 
 
-            var libro = pedido.elementosPedido.find((libro) => libro.libroItem == libroId);
+            const libro = pedido.elementosPedido.find((libro) => libro.libroItem == libroId);
             if (libro != null) {
                 libro.cantidadItem += 1;
             }
@@ -57,7 +57,7 @@ module.exports = {
     },
     eliminarLibroPedido: async (req, res) => {
         const libroId = req.params.id
-        var pedido = new Pedido(req.session.cliente.pedidoActual);
+        const pedido = new Pedido(req.session.cliente.pedidoActual);
 
         _eliminarLibroPedido({pedido, libroId})
             
@@ -105,7 +105,7 @@ module.exports = {
 }
 
 function _eliminarLibroPedido({pedido, libroId}) {
-    var borrarLibro = pedido.elementosPedido.filter(libro => libro.libroItem != libroId);
+    const borrarLibro = pedido.elementosPedido.filter(libro => libro.libroItem != libroId);
     
     pedido.elementosPedido = borrarLibro;
 }

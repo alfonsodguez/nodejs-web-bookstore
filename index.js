@@ -8,10 +8,10 @@ configServer(server);
 routingServer(server);   
 server.listen(3000);    
 
-mongoose.connect(process.env.connectionStringMongoDB, (err, datos) => {
+mongoose.connect(process.env.MONGO, (err, datos) => {
     if (!err) {
         console.log('...conectados al servidor MONGODB: AgapeaDB, al puerto 27017...');
     } else {
-        console.log('ERROR EN CONEXION MONGODB: ', err);
+        console.log('Error en la conexion a MongoDB: ', err);
     }
 });

@@ -87,8 +87,8 @@
 <script>
     //añadimos handler al evento onchange del input de tipo file...
     $('#selectorImagen').change(function(ev) { 
-        var fichSeleccionado = ev.target.files[0];  
-        var reader = new FileReader();  
+        const fichSeleccionado = ev.target.files[0];  
+        const reader = new FileReader();  
 
         reader.addEventListener('load', function(evt) {
             $('#imagenUsuario').attr('src', evt.target.result);  
@@ -97,7 +97,7 @@
                 $(evento.target).attr('disabled', '');
 
                 //creamos obj formdata: permite manda datos en formato multipart/form-data
-                var datos = new FormData();
+                const datos = new FormData();
                 datos.append('imagen', fichSeleccionado); 
 
                 $.ajax({

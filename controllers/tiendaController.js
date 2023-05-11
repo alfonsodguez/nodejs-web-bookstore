@@ -15,7 +15,7 @@ module.exports = {
             };
 
             const idMateriaPadre = '0'
-            const listaMaterias = _devolverMaterias({materiaId: idMateriaPadre})
+            const listaMaterias = await _devolverMaterias({materiaId: idMateriaPadre})
 
             res.status(200).render('Tienda/Libros.hbs', { 
                 listaMaterias: listaMaterias,
@@ -47,5 +47,5 @@ module.exports = {
 }
 
 async function _devolverMaterias({materiaId}){
-    return  Materias.find({IdMateriaPadre: materiaId}).lean();
+    return Materias.find({IdMateriaPadre: materiaId}).lean();
 }
