@@ -73,13 +73,13 @@
     </div>
     <script>
         $('a[id*="botonMenos-"]').click((ev) => {
-            const id = ev.target.id.replace('botonMenos-', '');
-            $(`label[id="ID-${id}"]`).text() == 1 ? $(ev.target).attr('href','javascript:void(0)') : true;
+            const id = ev.target.id.replace('botonMenos-', '')
+            $(`label[id="ID-${id}"]`).text() == 1 ? $(ev.target).attr('href', 'javascript:void(0)') : true
         });
 
         $('a[id*="botonMas-"]').click((ev) => {
-            const id = ev.target.id.replace('botonMas-', '');
-            $(`a[id*="botonMenos-${id}"]`).attr('href','http://localhost:3000/Pedido/RestarCantidadPedido/' + _id) 
+            const id = ev.target.id.replace('botonMas-', '')
+            $(`a[id*="botonMenos-${id}"]`).attr('href', 'http://localhost:3000/Pedido/RestarCantidadPedido/' + _id) 
         })
     </script>    
 </body>

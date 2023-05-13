@@ -1,17 +1,17 @@
 /**
  *  configuración modulos(middlewares) de la pipeline
  */
-const express = require('express');
-const viewEngine = require('express-handlebars');            
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const session = require('express-session');
+const express = require('express')
+const viewEngine = require('express-handlebars')            
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const session = require('express-session')
 
 
 module.exports = (serverExpress)=>{
-    serverExpress.use(cookieParser());
-    serverExpress.use(express.urlencoded( {extended: true} ));
-    serverExpress.use(express.json());
+    serverExpress.use(cookieParser())
+    serverExpress.use(express.urlencoded( {extended: true} ))
+    serverExpress.use(express.json())
     //-------- configuracion SESSION (cookie) -----------------
     serverExpress.use(session(
         {
@@ -24,9 +24,9 @@ module.exports = (serverExpress)=>{
                 secure: false,
                 maxAge: 360000,
         }
-    }));
+    }))
     //-------- configuracion view-engine con HANDLEBARS ----------------------
-    serverExpress.set('views', __dirname + '/../views');
+    serverExpress.set('views', __dirname + '/../views')
     serverExpress.engine('hbs', viewEngine.create(
         {
             extname: 'hbs',
@@ -34,22 +34,22 @@ module.exports = (serverExpress)=>{
             layoutsDir: __dirname + '/../views/shared/Layouts',
             partialsDir: __dirname + '/../views/shared/Partials',
             helpers: {
-                split: (cadena, separador, posicion)=>cadena.split(separador)[posicion],
-                operacion: (valor1, operdor, valor2)=>{
+                split: (cadena, separador, posicion) => cadena.split(separador)[posicion],
+                operacion: (valor1, operdor, valor2) => {
                     switch (operador) {
                         case '+':
-                            return valor1 + valor2;
+                            return valor1 + valor2
                         case '-':
-                            return valor1 - valor2;
+                            return valor1 - valor2
                         case '*':
-                            return valor1 * valor2;
+                            return valor1 * valor2
                         case '/':
-                            return valor1 / valor2;
+                            return valor1 / valor2
                     }
                 }
             }                                                                          
         }
-    ).engine);
+    ).engine)
 
-    serverExpress.use('/public', express.static('public', { index:false, maxAge:'1d' } ));     
+    serverExpress.use('/public', express.static('public', { index:false, maxAge:'1d' } ))     
 }

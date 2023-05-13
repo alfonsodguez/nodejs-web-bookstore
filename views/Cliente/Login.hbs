@@ -66,21 +66,14 @@
             </div>
             <div class="col-8">                
                 <img src="/public/images/formLogin.png">
-                
-                <!-- simulamos boton con un enlace-->
                 <a href="http:localhost:3000/Cliente/Registro"><img src="/public/images/BotonRegistrarUsuario.png"></a>
             </div>
-        
         </div>
     </div>
     <script>
         //--- provocamos submit del formulario mediante javascript ----
         const form = document.getElementById('formlogin');   
-        document
-            .getElementById('submitform')
-            .addEventListener("click", () => {
-                form.submit();
-            });
+        document.getElementById('submitform').addEventListener("click", () => { form.submit() });
     </script>
 </body>
 </html>

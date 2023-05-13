@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const librosSchema = new mongoose.Schema({
     iSBN:   { type: Number, required: true },
@@ -11,5 +11,5 @@ const librosSchema = new mongoose.Schema({
     numeroPaginas: { type: String, required: true },
     ficheroImagen: { type: String, required: true },
     descripcion:   { type: String, required: false },
-});
-module.exports = mongoose.model('Libro', librosSchema, 'libros');
+})
+module.exports = mongoose.model('Libro', librosSchema, 'libros')

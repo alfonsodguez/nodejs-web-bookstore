@@ -1,102 +1,102 @@
-const Libro = require('../models/libro');
-const Pedido = require('../models/pedidos');
-const Cliente = require('../models/cliente');
 const fs = require('fs')
 const pdfDocument = require('pdfkit-table')
 const logger = require('winston')
+const Libro = require('../models/libro')
+const Pedido = require('../models/pedidos')
+const Cliente = require('../models/cliente')
 
 module.exports = {
     addLibroPedido: async (req, res) => {
         try {           
             const libroId = req.params.id
             //recuperar session y añadir libro expandido al pedido
-            const pedido = new Pedido(req.session.cliente.pedidoActual); 
+            const pedido = new Pedido(req.session.cliente.pedidoActual) 
 
-            const libro = pedido.elementosPedido.find((libro) => libro.libroItem == libroId);
+            const libro = pedido.elementosPedido.find((libro) => libro.libroItem == libroId)
             if (libro != null) {
-                libro.cantidadItem += 1;
+                libro.cantidadItem += 1
             }
             else {
-                pedido.elementosPedido.push({ libroItem: libroId, cantidadItem: 1 });
+                pedido.elementosPedido.push({ libroItem: libroId, cantidadItem: 1 })
             }
 
-            await _renderizarMostrarPedido({pedido, req, res});
+            await _renderizarMostrarPedido({pedido, req, res})
         } catch (err) {
-            logger.err('Error interno del servidor ' + err);
+            logger.err('Error interno del servidor ' + err)
         }
     },
     sumarCantidadPedido: async (req, res) => {
         const libroId = req.params.id
-        const pedido = new Pedido(req.session.cliente.pedidoActual);  
+        const pedido = new Pedido(req.session.cliente.pedidoActual)  
 
         pedido.elementosPedido.forEach(libro => {
             if (libro.libroItem == libroId ) {
-                libro.cantidadItem += 1; 
+                libro.cantidadItem += 1 
             }
-        });
+        })
 
-        await _renderizarMostrarPedido({pedido, req, res});
+        await _renderizarMostrarPedido({pedido, req, res})
     },
     restarCantidadPedido: async (req, res) => {
         const libroId = req.params.id
-        const pedido = new Pedido(req.session.cliente.pedidoActual);
+        const pedido = new Pedido(req.session.cliente.pedidoActual)
 
-        const indexLibro = pedido.elementosPedido.findIndex(libro => libro.libroItem == libroId);
+        const indexLibro = pedido.elementosPedido.findIndex(libro => libro.libroItem == libroId)
 
         if (indexLibro != -1) {
-            const cantidad = pedido.elementosPedido[indexLibro].cantidadItem;
+            const cantidad = pedido.elementosPedido[indexLibro].cantidadItem
 
             if (cantidad > 1) {
-                pedido.elementosPedido[indexLibro].cantidadItem -= 1;
+                pedido.elementosPedido[indexLibro].cantidadItem -= 1
             }
-            else{
+            else {
                 _eliminarLibroPedido({pedido, libroId})
-            };
+            }
         }
-        await _renderizarMostrarPedido(pedido,req,res);
+        await _renderizarMostrarPedido(pedido,req, res)
     },
     eliminarLibroPedido: async (req, res) => {
         const libroId = req.params.id
-        const pedido = new Pedido(req.session.cliente.pedidoActual);
+        const pedido = new Pedido(req.session.cliente.pedidoActual)
 
         _eliminarLibroPedido({pedido, libroId})
             
         if(pedido.elementosPedido.length > 0){
-            await _renderizarMostrarPedido(pedido, req, res);            
+            await _renderizarMostrarPedido(pedido, req, res)            
         }
         else{
             //actualizar datos pedido
-            pedido.CalcularTotalPedido();
+            pedido.CalcularTotalPedido()
 
             //actualizar session 
-            req.session.cliente.pedidoActual = pedido;
+            req.session.cliente.pedidoActual = pedido
 
-            res.status(200).redirect('/Tienda/Libros/0');
+            res.status(200).redirect('/Tienda/Libros/0')
         }
     },
     finalizarPedido: async (req, res) => {
         try {
-            const pedido = new Pedido(req.session.cliente.pedidoActual);
+            const pedido = new Pedido(req.session.cliente.pedidoActual)
             pedido.estadoPedido = 'en curso'
-            const insertPedido = await Pedido(pedido).save();  
+            const insertPedido = await Pedido(pedido).save()  
 
-            const cliente = new Cliente(req.session.cliente);
-            cliente.historicoPedidos.push(insertPedido._id);
+            const cliente = new Cliente(req.session.cliente)
+            cliente.historicoPedidos.push(insertPedido._id)
 
             const updateCliente = await Cliente.updateOne(
                 { _id: cliente._id }, 
                 { historicoPedidos: cliente.historicoPedidos } 
-            );
+            )
             
             if (updateCliente == 1) {
                 //expandimos pedido para generar factura....
-                const itemsExpanded = await Libro.populate(pedido.elementosPedido, { path: 'libroItem' });
-                pedido.elementosPedido= itemsExpanded;
+                const itemsExpanded = await Libro.populate(pedido.elementosPedido, { path: 'libroItem' })
+                pedido.elementosPedido= itemsExpanded
             
-                _crearFacturaPDF({pedido});
-                await _emailEnvioPdf({cliente});
+                _crearFacturaPDF({pedido})
+                await _emailEnvioPdf({cliente})
 
-                res.status(200).redirect('/Tienda/Libros/0');
+                res.status(200).redirect('/Tienda/Libros/0')
             }
         } catch (err) {
             logger.err('Error al realizar al actualizar las colecciones pedido, cliente')
@@ -105,32 +105,32 @@ module.exports = {
 }
 
 function _eliminarLibroPedido({pedido, libroId}) {
-    const borrarLibro = pedido.elementosPedido.filter(libro => libro.libroItem != libroId);
+    const borrarLibro = pedido.elementosPedido.filter(libro => libro.libroItem != libroId)
     
-    pedido.elementosPedido = borrarLibro;
+    pedido.elementosPedido = borrarLibro
 }
 
 async function _renderizarMostrarPedido({pedido, req, res}) {
-    await pedido.CalcularTotalPedido();
+    await pedido.CalcularTotalPedido()
     pedido.elementosPedido = await Libro.populate(pedido.elementosPedido, { path: 'libroItem' })
 
     //actualizamos session 
-    req.session.cliente.pedidoActual = pedido;           
+    req.session.cliente.pedidoActual = pedido           
 
     res.status(200).render('Pedido/MostrarPedido.hbs', { layout: null, pedido: pedido.toObject() }) 
 }
 
 function _crearFacturaPDF({pedido}) {
-    const factura   = new pdfDocument();
+    const factura   = new pdfDocument()
     const pdfPath   = __dirname + '/../pdf/factura-' + pedido._id.toString() + '.pdf'
     const imagePath = __dirname + '/../public/images/cabecera.png'
     const cabecera  = 'RESUMEN DE LA CESTA'
     const separador = '________________________'
     
-    factura.pipe(fs.createWriteStream(pdfPath));
-    factura.image(imagePath, { align: 'center' });
-    factura.fontSize(20).text(cabecera);
-    factura.fontSize(20).text(separador);
+    factura.pipe(fs.createWriteStream(pdfPath))
+    factura.image(imagePath, { align: 'center' })
+    factura.fontSize(20).text(cabecera)
+    factura.fontSize(20).text(separador)
     
     const filas = pedido.elementosPedido.map(itemPedido => {
         return [
@@ -144,24 +144,24 @@ function _crearFacturaPDF({pedido}) {
     const tablaItemsPedido = {
         headers: ["Titulo del Libro", "Precio del Libro", "Cantidad de libros", "SubTotal Libro"],
         rows: filas
-    };
+    }
 
-    factura.table(tablaItemsPedido, { width: 300 });
-    factura.fontSize(20).text(separador);
-    factura.fontSize(20).text('SubTotal Pedido: ' + pedido.subTotalPedido + ' €');
-    factura.fontSize(18).text('Gastos de Envio: ' + pedido.GastosDeEnvio + ' €');
-    factura.fontSize(20).text('TOTAL PEDIDO: ' + pedido.totalPedido + ' €');
-    factura.end();
+    factura.table(tablaItemsPedido, { width: 300 })
+    factura.fontSize(20).text(separador)
+    factura.fontSize(20).text('SubTotal Pedido: ' + pedido.subTotalPedido + ' €')
+    factura.fontSize(18).text('Gastos de Envio: ' + pedido.GastosDeEnvio + ' €')
+    factura.fontSize(20).text('TOTAL PEDIDO: ' + pedido.totalPedido + ' €')
+    factura.end()
 }
 
 async function _emailEnvioPdf({cliente}) {
-    const pedidoId = cliente.pedidoActual._id.toString();
-    const direccionPpal = cliente.direcciones.find((direccion) => direccion.esprincipal == true);
+    const pedidoId = cliente.pedidoActual._id.toString()
+    const direccionPpal = cliente.direcciones.find((direccion) => direccion.esprincipal == true)
     const pdfPath = '/pdf/factura-' + pedidoId + '.pdf'
 
     // pasar el contendio del fichero .pdf a base64 para poderse mandar por email
-    const datos = fs.readFileSync(process.cwd() + pdfPath);
-    const adjuntoBase64 = datos.toString('base64');
+    const datos = fs.readFileSync(process.cwd() + pdfPath)
+    const adjuntoBase64 = datos.toString('base64')
     const cuerpoEmail = {
         "Messages": [{
             "From": {

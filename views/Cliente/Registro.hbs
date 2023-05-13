@@ -26,7 +26,6 @@
                 <p>En ambos casos, recibirás un correo electrónico en tu cuenta con un enlace con el que confirmarás tus datos, y estarás disfrutando de nuestros servicios y ventajas. </p>
             </div>
         </div>
-        <!-- pasamos a la vista el mensaje de error caundo falla al grabar en mongodb-->
         {{#if mensajeError}}
             <div class="row">
                 <div class="col">
@@ -129,137 +128,134 @@
     <script>
         $('#inputProvincia').change(function(evt) {
             $('#inputLocalidad > option').each((index, elem) => {
-                if (elem.value!=0 ) { 
+                if (elem.value != 0 ) { 
                     elem.remove()
                 }
             })            
-            if (evt.target.value !=0) {
-                $('#inputLocalidad').prop("disabled", false);
+            if (evt.target.value != 0) {
+                $('#inputLocalidad').prop("disabled", false)
 
-                fetch('http://localhost:3000/api/getMunicipios/' +$(this).val(), {method: 'get'}) 
+                fetch('http://localhost:3000/api/getMunicipios/' +$(this).val(), { method: 'get' } ) 
                     .then(bodyMunicipios => bodyMunicipios.json()) 
                     .then(municipios => municipios.forEach(municipio => { 
                         //construimos tags option
-                        $('#inputLocalidad').append(`<option value=${municipio.codMun}>${municipio.NombreMunicipio}</option>`);
+                        $('#inputLocalidad').append(`<option value=${municipio.codMun}>${municipio.NombreMunicipio}</option>`)
                     })) 
-                    .catch(error=>console.log('error munis',error));
+                    .catch(error => console.log('error munis', error))
             }           
         })
 
         //------------------------------ validaciones -------------------------------
-        const cajaEmail = document.getElementById('inputEmail');
-        cajaEmail.addEventListener('blur', validarEmail);
+        const cajaEmail = document.getElementById('inputEmail')
+        cajaEmail.addEventListener('blur', validarEmail)
         function validarEmail(ev) {
-            let success = true;
-            if(ev.target.value == ''){
-                success = false;
+            let success = true
+            if (ev.target.value == '') {
+                success = false
             }
             if ( /^.*@.*\.(com|es|uk|it|org)$/.test(ev.target.value) == false) {
-                success = false;
+                success = false
             }
             if (success == false) {
                 //borramas etiqueta span en caso de que exista 
                 if(ev.target.nextElementSibling != null){
-                    ev.target.nextElementSibling.remove();
+                    ev.target.nextElementSibling.remove()
                 }					
                 //añadimos etiqueta span
-                const textoError = document.createElement('span');
-                textoError.textContent= '* Campo obligatorio';
-                textoError.setAttribute('style', 'color: red');
-                ev.target.after(textoError);
+                const textoError = document.createElement('span')
+                textoError.textContent = '* Campo obligatorio'
+                textoError.setAttribute('style', 'color: red')
+                ev.target.after(textoError)
             }
             else if (success) {
                 //campo bien validado
                 //eliminamos etiqueta span si existe
                 if(ev.target.nextElementSibling != null){
-                    ev.target.nextElementSibling.remove();
+                    ev.target.nextElementSibling.remove()
                 }														
             }
-        };
+        }
 
-        const cajaPassword = document.getElementById('inputPassword');
-        cajaPassword.addEventListener('blur', validarPassword);
+        const cajaPassword = document.getElementById('inputPassword')
+        cajaPassword.addEventListener('blur', validarPassword)
         function validarPassword(ev) {
-            let validated = true;
+            let validated = true
             
-            const isWhitespace = /^(?=.*\s)/;
+            const isWhitespace = /^(?=.*\s)/
             if (isWhitespace.test(ev.target.value)) {
-                console.log("La contraseña no debe contener espacios en blanco.");
-                validated = false;
+                console.log("La contraseña no debe contener espacios en blanco.")
+                validated = false
             }
         
-            const isContainsUppercase = /^(?=.*[A-Z])/;
+            const isContainsUppercase = /^(?=.*[A-Z])/
             if (!isContainsUppercase.test(ev.target.value)) {
-                console.log("La contraseña debe tener al menos un caracter en mayuscula.");
-                validated = false;
+                console.log("La contraseña debe tener al menos un caracter en mayuscula.")
+                validated = false
             }
         
-            const isContainsLowercase = /^(?=.*[a-z])/;
+            const isContainsLowercase = /^(?=.*[a-z])/
             if (!isContainsLowercase.test(ev.target.value)) {
-                console.log("La contraseña debe tener al menos un carácter en minúscula.");
-                validated = false;
+                console.log("La contraseña debe tener al menos un carácter en minúscula.")
+                validated = false
             }
         
-            const isContainsNumber = /^(?=.*[0-9])/;
+            const isContainsNumber = /^(?=.*[0-9])/
             if (!isContainsNumber.test(ev.target.value)) {
-                console.log("La contraseña debe contener al menos un dígito.");
-                validated = false;
+                console.log("La contraseña debe contener al menos un dígito.")
+                validated = false
             }
         
-            const isContainsSymbol = /^(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹])/;
+            const isContainsSymbol = /^(?=.*[~`!@#$%^&*()--+={}\[\]|\\:"'<>,.?/_₹])/
             if (!isContainsSymbol.test(ev.target.value)) {
-                console.log("La contraseña debe contener al menos un símbolo especial.");
-                validated = false;
+                console.log("La contraseña debe contener al menos un símbolo especial.")
+                validated = false
             }
         
-            const isValidLength = /^.{8,16}$/;
+            const isValidLength = /^.{8,16}$/
             if (!isValidLength.test(ev.target.value)) {
-                console.log("La contraseña debe tener entre 8 y 16 caracteres.");
-                validated = false;
+                console.log("La contraseña debe tener entre 8 y 16 caracteres.")
+                validated = false
             }
             
             if (validated == false) {
                 //si existe etiqueta span la borramos 
                 if(ev.target.nextElementSibling != null){
-                    ev.target.nextElementSibling.remove();
+                    ev.target.nextElementSibling.remove()
                 }		
                 //añadimos etiqueta span
-                const textoError = document.createElement('span');
-                textoError.textContent= '* Password incorrecta';
-                textoError.setAttribute('style', 'color: red');
-                ev.target.after(textoError);
+                const textoError = document.createElement('span')
+                textoError.textContent= '* Password incorrecta'
+                textoError.setAttribute('style', 'color: red')
+                ev.target.after(textoError)
             }
             //comprobamos que no hay etiqueta span
-            else if (validated)
-            {
+            else if (validated) {
                 //si existe etiqueta span la borramos 
                 if(ev.target.nextElementSibling != null){
-                    ev.target.nextElementSibling.remove();
+                    ev.target.nextElementSibling.remove()
                 }							
             }
         }
 
         //añadimos un listener a todos los campos
-        const cajasTexto = document.getElementsByTagName('input'); 
-        Array
-            .from(cajasTexto)
-            .forEach(caja => caja.addEventListener('blur',validarCampos))
+        const cajasTexto = document.getElementsByTagName('input') 
+        Array.from(cajasTexto).forEach(caja => caja.addEventListener('blur', validarCampos))
         function validarCampos(ev) {
-            if(ev.target.getAttribute('type') == 'text'){
+            if (ev.target.getAttribute('type') == 'text') {
                 //comprobamos si tiene texto 
-                if(ev.target.value == ""){
+                if (ev.target.value == "") {
                     //comprobamos si existe etiqueta span
                     if (ev.target.nextElementSibling != null) {
-                        ev.target.nextElementSibling.remove();
+                        ev.target.nextElementSibling.remove()
                     }
-                    const textoError = document.createElement('span');
-                    textoError.textContent= '* Campo Obligatorio';
-                    textoError.setAttribute('style', 'color: red');
-                    ev.target.after(textoError);
+                    const textoError = document.createElement('span')
+                    textoError.textContent = '* Campo Obligatorio'
+                    textoError.setAttribute('style', 'color: red')
+                    ev.target.after(textoError)
                 }
                 else if (ev.target.nextElementSibling != null) {
                     //el campo esta bien validado 
-                    ev.target.nextElementSibling.remove();
+                    ev.target.nextElementSibling.remove()
                 }
             }               
             //compruebo el numero de campos validados 
@@ -269,16 +265,15 @@
                 .length
 
             //etiquetas de span hay
-            console.log(numIncorrect);			  
             if (numIncorrect > 0) {
                 //deshabilitamos boton
-                document.getElementById('botonSubmit').disabled = true;
+                document.getElementById('botonSubmit').disabled = true
             }
             else {
                 //habilitamos boton
-                document.getElementById('botonSubmit').disabled = false;
+                document.getElementById('botonSubmit').disabled = false
             }
-        };
+        }
     </script>           
 </body>
 </html> 

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const direccionSchema = new mongoose.Schema({
     calle:{ type: String, required: true },
@@ -7,5 +7,5 @@ const direccionSchema = new mongoose.Schema({
     provincia:  { type: mongoose.Schema.Types.ObjectId, ref:'Provincias' },
     municipio:  { type: mongoose.Schema.Types.ObjectId, ref: 'Municipios' },
     clienteid:  { type: mongoose.Schema.Types.ObjectId, ref:'Cliente' }
-});
-module.exports = mongoose.model('Direccion', direccionSchema, 'direcciones');
+})
+module.exports = mongoose.model('Direccion', direccionSchema, 'direcciones')

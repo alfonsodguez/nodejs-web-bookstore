@@ -6,7 +6,6 @@
         </div>
     </div>
     <div class="row">
-        <!-- columna para la subida de la imagen avatar...-->
         <div class="col-3">
             <input type="file" accept="image/*" id="selectorImagen" name="imagen" style="visibility: hidden;"/>
             <a onclick="javascript:$('#selectorImagen')[0].click()">
@@ -63,7 +62,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class='col'>
                         <p><strong>Darse de baja como usuario registrado</strong></p>
@@ -71,7 +69,6 @@
                         <a href='http://localhost:3000/Cliente/Panel/Borrar'> aquí</a>
                     </div>
                 </div>  
-
                 <div class='row'>
                     <div class='col-10'></div>
                     <div class='col-2'>
@@ -87,17 +84,17 @@
 <script>
     //añadimos handler al evento onchange del input de tipo file...
     $('#selectorImagen').change(function(ev) { 
-        const fichSeleccionado = ev.target.files[0];  
-        const reader = new FileReader();  
+        const fichSeleccionado = ev.target.files[0]  
+        const reader = new FileReader()  
 
         reader.addEventListener('load', function(evt) {
-            $('#imagenUsuario').attr('src', evt.target.result);  
-            $('#botonUploadImagen').removeAttr('disabled');
+            $('#imagenUsuario').attr('src', evt.target.result)  
+            $('#botonUploadImagen').removeAttr('disabled')
             $('#botonUploadImagen').click(function(evento) {   
-                $(evento.target).attr('disabled', '');
+                $(evento.target).attr('disabled', '')
 
                 //creamos obj formdata: permite manda datos en formato multipart/form-data
-                const datos = new FormData();
+                const datos = new FormData()
                 datos.append('imagen', fichSeleccionado); 
 
                 $.ajax({
@@ -109,11 +106,11 @@
                 })
                 .always( 
                     function() { 
-                        $('#botonUploadImagen').removeAttr('disabled');
+                        $('#botonUploadImagen').removeAttr('disabled')
                     }
                 );
             })
-        });
-        reader.readAsDataURL(fichSeleccionado); 
+        })
+        reader.readAsDataURL(fichSeleccionado)
     })
 </script>

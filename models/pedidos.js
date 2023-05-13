@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Libro = require('../models/libro');
+const mongoose = require('mongoose')
+const Libro = require('../models/libro')
 
 const pedidosSchema = new mongoose.Schema({
     gastosEnvio:    { type: Number, required: true, default: 0 },
@@ -12,18 +12,18 @@ const pedidosSchema = new mongoose.Schema({
         libroItem:    { type: mongoose.Schema.Types.ObjectId, ref: 'Libro' },
         cantidadItem: { type: Number, required: true, default: 1 } 
     }]
-});
-module.exports = mongoose.model('Pedido', pedidosSchema, 'pedidos');
+})
+module.exports = mongoose.model('Pedido', pedidosSchema, 'pedidos')
 
 pedidosSchema.methods.CalcularTotalPedido = async function() {
-    const elemPedidoExpanded = await Libro.populate(this.elementosPedido, { path: 'libroItem' });
+    const elemPedidoExpanded = await Libro.populate(this.elementosPedido, { path: 'libroItem' })
 
-    const subtotal = 0;
+    const subtotal = 0
     elemPedidoExpanded.forEach((itemPedido) => {
-        subtotal += itemPedido.cantidadItem * itemPedido.libroItem.precio;
-    });
+        subtotal += itemPedido.cantidadItem * itemPedido.libroItem.precio
+    })
 
-    this.subTotalPedido = Math.round(subtotal * 100)/100;
-    this.totalPedido = Math.round((subtotal + this.gastosEnvio) * 100)/100;
-};
+    this.subTotalPedido = Math.round(subtotal * 100)/100
+    this.totalPedido = Math.round((subtotal + this.gastosEnvio) * 100)/100
+}
 
