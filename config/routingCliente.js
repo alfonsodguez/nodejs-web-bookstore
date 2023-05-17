@@ -26,7 +26,7 @@ router.route('/Panel/MiPerfil')
       .get(ClienteController.miPerfilget)
       .post(ClienteController.miPerfilpost)
 
-function _checkSessionCliente(req, res, next){  
+function _checkSessionCliente(req, res, next) {  
       if (req.session.cliente == undefined || req.session.cliente == null || req.session.cliente == '') {
             res.status(200).redirect('http://localhost:3000/Cliente/Login')
       }

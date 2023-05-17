@@ -10,7 +10,7 @@ module.exports = {
                         
             const tuplasDeTresLibros = []
             for (const pos = 0; pos < libros.length; pos = pos + 3) {
-                const tresLibros = libros.slice(pos, pos+3)
+                const tresLibros = libros.slice(pos, pos + 3)
                 tuplasDeTresLibros.push(tresLibros)               
             }
 
@@ -24,7 +24,7 @@ module.exports = {
             })
 
         } catch (err) {
-           logger.err('Error al recuperar libros o materias' + err)
+           logger.error('Error al recuperar libros o materias', err)
         }       
     },
     getMostrarLibro: async (req, res) => {
@@ -35,13 +35,9 @@ module.exports = {
             const idMateriPadre = '0' 
             const listaMaterias = await _devolverMaterias({materiaId: idMateriPadre})
 
-            res.status(200).render('Tienda/MostrarLibro.hbs', { 
-                listaMaterias: listaMaterias,
-                unlibro: libro
-            })
-
+            res.status(200).render('Tienda/MostrarLibro.hbs', { listaMaterias: listaMaterias, unlibro: libro })
         } catch (err) {
-            logger.err('Error al recuperar libros ' + err)
+            logger.error('Error al recuperar libros ', err)
         }
     }
 }

@@ -43,11 +43,13 @@ module.exports = {
         }).save()
 
         const salt = 10
+        const hash =  bcrypt.hashSync(password, salt)
+
         const insertCredenciales = Credenciales({ 
             _id: credenciaslesId,
             login, 
             email,
-            hashpassword: bcrypt.hashSync(password, salt),
+            hashpassword: hash,
         }).save() 
 
         const insertDirecciones = Direccion({
@@ -148,10 +150,7 @@ module.exports = {
                 
                 res.redirect("http://localhost:3000/Cliente/Login")
             } else {    
-                res.status(200).render('Cliente/CompruebaEmail.hbs',{ 
-                    layout: null,
-                    mensajeError: "Fallo en la conexion con el servidor,intentelo mas tarde..." 
-                })
+                res.status(200).render('Cliente/CompruebaEmail.hbs', { layout: null, mensajeError: "Fallo en la conexion con el servidor,intentelo mas tarde..." })
             }
         } catch (err) {
             res.status(200).render('Cliente/Registro.hbs', { layout: null, mensajeError: 'Error interno del servidor, intentelo de nuevo mas tarde...' })
@@ -168,10 +167,7 @@ module.exports = {
          * usamos un middleware en routingCliente.js para comprobar si existe constiable de session 
          * en rutas Cliente/Panel/*, en el se añaden las prop "cliente", "listaOpcCliene" a la request
          */ 
-        res.status(200).render('Cliente/MiPerfil.hbs', {
-            cliente: req.cliente, 
-            listaOpcCliente: req.opPanelCliente 
-        })
+        res.status(200).render('Cliente/MiPerfil.hbs', { cliente: req.cliente,  listaOpcCliente: req.opPanelCliente })
 
     },
     miPerfilpost: async (req, res) => {
@@ -194,10 +190,7 @@ module.exports = {
                 //actualizamos session
                 req.session.cliente = cliente
                 
-                res.status(200).render('Cliente/PanelInicio.hbs', {
-                    cliente: cliente, 
-                    listaOpcCliente: req.opPanelCliente 
-                })
+                res.status(200).render('Cliente/PanelInicio.hbs', { cliente: cliente, listaOpcCliente: req.opPanelCliente })
             })
             .catch((err)=>{
                 res.status(200).render('Cliente/PanelInicio.hbs',{
@@ -212,7 +205,7 @@ module.exports = {
     }
 } 
 
-async function _devolverProvincias(){
+async function _devolverProvincias() {
     return Provincias.find().sort({NombreProvincia: 'asc'}).lean() 
 }
 
@@ -236,6 +229,6 @@ async function _emailConfirmacionRegistro({email, nombre}) {
     try {
         await emailSevice.sendEmail({mensaje: cuerpoEmail})
     } catch (err) {
-        logger.err('Fallo al enviar el email de confirmacion de registro')
+        logger.error('Fallo al enviar el email de confirmacion de registro', err)
     }
 }

@@ -4,15 +4,15 @@ const configServer  = require('./config_server/middleware')
 const routingServer = require('./config_server/routingMAIN')
 require('dotenv').config()
 
-const server = express()  
-configServer(server)    
-routingServer(server)   
-server.listen(3000)    
+const app = express()  
+configapp(app)    
+routingapp(app)   
+app.listen(3000)    
 
-mongoose.connect(process.env.MONGO, (err, datos) => {
+mongoose.connect(process.env.MONGO_URI, (err, datos) => {
     if (!err) {
-        console.log('...conectados al servidor MONGODB: AgapeaDB, al puerto 27017...')
+        console.log('Conexion a Mongo OK')
     } else {
-        console.log('Error en la conexion a MongoDB: ', err)
+        console.log('Error en la conexion a Mongo: ', err)
     }
 })

@@ -126,6 +126,7 @@
         </div>
     </div>  
     <script>
+        //---------------dropdown municipios-------------------------
         $('#inputProvincia').change(function(evt) {
             $('#inputLocalidad > option').each((index, elem) => {
                 if (elem.value != 0 ) { 
@@ -135,7 +136,8 @@
             if (evt.target.value != 0) {
                 $('#inputLocalidad').prop("disabled", false)
 
-                fetch('http://localhost:3000/api/getMunicipios/' +$(this).val(), { method: 'get' } ) 
+                const url = 'http://localhost:3000/api/getMunicipios/' + $(this).val()
+                fetch(url, { method: 'get' }) 
                     .then(bodyMunicipios => bodyMunicipios.json()) 
                     .then(municipios => municipios.forEach(municipio => { 
                         //construimos tags option
@@ -150,13 +152,13 @@
         cajaEmail.addEventListener('blur', validarEmail)
         function validarEmail(ev) {
             let success = true
-            if (ev.target.value == '') {
+            if (ev.target.value === '') {
                 success = false
             }
-            if ( /^.*@.*\.(com|es|uk|it|org)$/.test(ev.target.value) == false) {
+            if ( /^.*@.*\.(com|es|uk|it|org)$/.test(ev.target.value) === false) {
                 success = false
             }
-            if (success == false) {
+            if (success === false) {
                 //borramas etiqueta span en caso de que exista 
                 if(ev.target.nextElementSibling != null){
                     ev.target.nextElementSibling.remove()
@@ -217,7 +219,7 @@
                 validated = false
             }
             
-            if (validated == false) {
+            if (validated === false) {
                 //si existe etiqueta span la borramos 
                 if(ev.target.nextElementSibling != null){
                     ev.target.nextElementSibling.remove()
@@ -241,9 +243,9 @@
         const cajasTexto = document.getElementsByTagName('input') 
         Array.from(cajasTexto).forEach(caja => caja.addEventListener('blur', validarCampos))
         function validarCampos(ev) {
-            if (ev.target.getAttribute('type') == 'text') {
+            if (ev.target.getAttribute('type') === 'text') {
                 //comprobamos si tiene texto 
-                if (ev.target.value == "") {
+                if (ev.target.value === "") {
                     //comprobamos si existe etiqueta span
                     if (ev.target.nextElementSibling != null) {
                         ev.target.nextElementSibling.remove()

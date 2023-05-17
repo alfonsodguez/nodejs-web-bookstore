@@ -9,7 +9,7 @@ module.exports = {
 
             res.status(200).json(municipios)
         } catch (err) {
-            logger.err('Error al recuperar los municipios' + err)
+            logger.error('Error al recuperar los municipios', err)
         }
     },
     uploadImagen: (req, res) => {

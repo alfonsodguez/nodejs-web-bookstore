@@ -12,7 +12,7 @@ module.exports = {
             //recuperar session y añadir libro expandido al pedido
             const pedido = new Pedido(req.session.cliente.pedidoActual) 
 
-            const libro = pedido.elementosPedido.find((libro) => libro.libroItem == libroId)
+            const libro = pedido.elementosPedido.find((libro) => libro.libroItem === libroId)
             if (libro != null) {
                 libro.cantidadItem += 1
             }
@@ -22,7 +22,7 @@ module.exports = {
 
             await _renderizarMostrarPedido({pedido, req, res})
         } catch (err) {
-            logger.err('Error interno del servidor ' + err)
+            logger.error('Error interno del servidor ', err)
         }
     },
     sumarCantidadPedido: async (req, res) => {
@@ -30,7 +30,7 @@ module.exports = {
         const pedido = new Pedido(req.session.cliente.pedidoActual)  
 
         pedido.elementosPedido.forEach(libro => {
-            if (libro.libroItem == libroId ) {
+            if (libro.libroItem === libroId ) {
                 libro.cantidadItem += 1 
             }
         })
@@ -41,7 +41,7 @@ module.exports = {
         const libroId = req.params.id
         const pedido = new Pedido(req.session.cliente.pedidoActual)
 
-        const indexLibro = pedido.elementosPedido.findIndex(libro => libro.libroItem == libroId)
+        const indexLibro = pedido.elementosPedido.findIndex(libro => libro.libroItem === libroId)
 
         if (indexLibro != -1) {
             const cantidad = pedido.elementosPedido[indexLibro].cantidadItem
@@ -88,7 +88,7 @@ module.exports = {
                 { historicoPedidos: cliente.historicoPedidos } 
             )
             
-            if (updateCliente == 1) {
+            if (updateCliente === 1) {
                 //expandimos pedido para generar factura....
                 const itemsExpanded = await Libro.populate(pedido.elementosPedido, { path: 'libroItem' })
                 pedido.elementosPedido= itemsExpanded
@@ -99,7 +99,7 @@ module.exports = {
                 res.status(200).redirect('/Tienda/Libros/0')
             }
         } catch (err) {
-            logger.err('Error al realizar al actualizar las colecciones pedido, cliente')
+            logger.error('Error al realizar al actualizar las colecciones pedido, cliente', err)
         }
     }
 }
@@ -156,7 +156,7 @@ function _crearFacturaPDF({pedido}) {
 
 async function _emailEnvioPdf({cliente}) {
     const pedidoId = cliente.pedidoActual._id.toString()
-    const direccionPpal = cliente.direcciones.find((direccion) => direccion.esprincipal == true)
+    const direccionPpal = cliente.direcciones.find((direccion) => direccion.esprincipal === true)
     const pdfPath = '/pdf/factura-' + pedidoId + '.pdf'
 
     // pasar el contendio del fichero .pdf a base64 para poderse mandar por email
@@ -200,7 +200,7 @@ async function _emailEnvioPdf({cliente}) {
     try {
         await emailSevice.sendEmail({mensaje: cuerpoEmail})
     } catch (err) {
-        logger.error('Error en envio del pdf al email ' + err)
+        logger.error('Error en envio del pdf al email ', err)
     }
 }
 

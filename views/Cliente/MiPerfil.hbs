@@ -95,7 +95,7 @@
 
                 //creamos obj formdata: permite manda datos en formato multipart/form-data
                 const datos = new FormData()
-                datos.append('imagen', fichSeleccionado); 
+                datos.append('imagen', fichSeleccionado) 
 
                 $.ajax({
                     method:'post', 
@@ -104,11 +104,9 @@
                     contentType: false, 
                     processData: false                                                  
                 })
-                .always( 
-                    function() { 
-                        $('#botonUploadImagen').removeAttr('disabled')
-                    }
-                );
+                .always(function() { 
+                    $('#botonUploadImagen').removeAttr('disabled')
+                })
             })
         })
         reader.readAsDataURL(fichSeleccionado)
