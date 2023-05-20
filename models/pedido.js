@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Libro = require('../models/libro')
+const Libro = require('./libro')
 
 const pedidosSchema = new mongoose.Schema({
     gastosEnvio:    { type: Number, required: true, default: 0 },

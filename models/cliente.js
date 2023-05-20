@@ -8,7 +8,7 @@ const clienteSchema = new mongoose.Schema({
     cuentaActiva: { type: Boolean, default: false },
     imagenAvatar: { type: String,  default: '' },       
     credenciales: { type: mongoose.Schema.Types.ObjectId, ref: "Credenciales" },
-    direcciones:      [ { type: mongoose.Schema.Types.ObjectId, ref: "Direccion" } ],
+    direccion:        [ { type: mongoose.Schema.Types.ObjectId, ref: "Direccion" } ],
     historicoPedidos: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Pedido' } ],
 })
 module.exports = mongoose.model('Cliente', clienteSchema, 'clientes')

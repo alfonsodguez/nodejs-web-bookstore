@@ -5,15 +5,20 @@ const emailSevice = require('./email_service')
 const Cliente = require('../models/cliente')
 const Credenciales = require('../models/credenciales')
 const Direccion = require('../models/direccion')
-const Provincias = require('../models/provincias')
-const Municipios = require('../models/municipios')
-const Pedido = require('../models/pedidos')
+const Provincia = require('../models/provincia')
+const Municipio = require('../models/municipio')
+const Pedido = require('../models/pedido')
 const Libro = require('../models/libro')
+
+const URL = {
+    LOGIN:  "http://localhost:3000/Cliente/Login",
+    LIBROS: "http://localhost:3000/Tienda/Libros/0"
+}
 
 module.exports = { 
     getRegistro: async (req, res) => {                
         try {
-            const provincias = await Provincias.find().sort({ NombreProvincia: 'asc' }).lean()   // utilizar lean ya que handlebas no admite la prop _id
+            const provincias = await _findProvincias()
 
             res.status(200).render('Cliente/Registro.hbs', { layout: null, listaProvincias: provincias })
         } catch (err) {
@@ -21,13 +26,13 @@ module.exports = {
         }                  
     },
     postRegistro: async (req, res) => { 
-        const {nombre, apellidos, nif, login, email, password, calle, cp, codPro, codMun} = req.body
+        const {nombre, apellidos, nif, telefono, username, email, password, calle, cp, codPro, codMun} = req.body
         const direccionId = new mongoose.Types.ObjectId
         const clienteId = new mongoose.Types.ObjectId
         const credenciaslesId = new mongoose.Types.ObjectId
 
-        const provincia = await Provincias.findOne({ codPro: codPro }).lean()
-        const municipio = await Municipios.findOne({ codPro: codPro, codMun: codMun }).lean()
+        const provincia = await Provincia.findOne({ codPro: codPro }).select('_id').lean()
+        const municipio = await Municipio.findOne({ codPro: codPro, codMun: codMun }).select('_id').lean()
 
         const insertCliente = Cliente({ 
             _id: clienteId,
@@ -43,13 +48,13 @@ module.exports = {
         }).save()
 
         const salt = 10
-        const hash =  bcrypt.hashSync(password, salt)
+        const hash = bcrypt.hashSync(password, salt)
 
         const insertCredenciales = Credenciales({ 
             _id: credenciaslesId,
-            login, 
+            username, 
             email,
-            hashpassword: hash,
+            hash,
         }).save() 
 
         const insertDirecciones = Direccion({
@@ -64,13 +69,13 @@ module.exports = {
 
         // resolvemos las querys
         Promise.all([insertCliente, insertCredenciales, insertDirecciones])  
-            .then(async (results) => { 
+            .then(async () => { 
                 await _emailConfirmacionRegistro({email, nombre})
 
                 res.status(200).render('Cliente/RegistroOK.hbs', { layout: null }) 
             }) 
             .catch(async (err) => { 
-                const provincias = await _devolverProvincias()
+                const provincias = await _findProvincias()
 
                 res.status(200).render('Cliente/Registro.hbs', { layout: null, listaProvincias: provincias, mensajeError: 'Error interno del servidor...' })
             })
@@ -81,17 +86,17 @@ module.exports = {
     postLogin: async (req, res) => {          
         try {
             const {password, email} = req.body
-            const credenciales = await Credenciales.findOne({ email }).lean()
-            const isValidPassword = bcrypt.compareSync(password, credenciales.hashpassword)
+            const credenciales = await _findCredenciales({email})
+            const isValidPassword = bcrypt.compareSync(password, credenciales.hash)
 
             if (isValidPassword) {
                 const cliente = await Cliente
-                    .findOne({credenciales: credenciales._id}) 
+                    .findOne({ credenciales: credenciales._id }) 
                     .populate([ 
                         { path: 'credenciales', model: Credenciales },
-                        { path: 'direcciones', model: Direccion, populate: [
-                            { path: 'provincia', model: Provincias },
-                            { path: 'municipio', model: Municipios }
+                        { path: 'direccion',  model: Direccion, populate: [
+                            { path: 'provincia', model: Provincia },
+                            { path: 'municipio', model: Municipio }
                         ]},
                         { path: 'historicoPedidos', model: Pedido, populate: { path: 'elementosPedido.libroItem', model: Libro } }
                     ])
@@ -113,42 +118,42 @@ module.exports = {
                 //creamos prop. cliente en la session y añadimos datos cliente
                 req.session.cliente = cliente   
 
-                res.redirect("http://localhost:3000/Tienda/Libros/0")
+                res.redirect(URL.LIBROS)
             }
             else {
-                res.status(200).render('Cliente/Login.hbs', { layout: null, mensErrPersonalizado: "Email o contraseña incorrectas, vuelve a intentarlo"})
+                res.status(200).render('Cliente/Login.hbs', { layout: null, mensajeErrorCustom: "Email o contraseña incorrectas, vuelve a intentarlo" })
             }
         } catch (err) {
             res.status(200).render('Cliente/Login.hbs', { layout: null, mensajeError: 'Error en el server...' })
         }   
     },
-    activarCuentaget: async (req, res) => {
+    getActivarCuenta: async (req, res) => {
         try {
             const email = req.params.email
-            const credenciales = await Credenciales.findOne({ email })
-            const cliente = await Cliente.findOneAndUpdate(
+            const credenciales = await _findCredenciales({email})
+
+            await Cliente.findOneAndUpdate(
                 { 'credenciales': credenciales._id }, 
                 { 'cuentaActiva': true },
                 { new: true } 
             )
 
-            res.redirect("http://localhost:3000/Cliente/Login")
+            res.redirect(URL.LOGIN)
         } catch (err) {
-            res.status(200).render('Cliente/Registro.hbs', { layout: null, mensajeError: 'Error interno del servidor, intentelo de nuevo mas tarde...'})
+            res.status(200).render('Cliente/Registro.hbs', { layout: null, mensajeError: 'Error interno del servidor, intentelo de nuevo mas tarde...' })
         }
     },
-    comprobarEmailget: (req, res) => {
+    getComprobarEmail: (req, res) => {
         res.status(200).render('Cliente/CompruebaEmail.hbs', { layout: null })
     },
-    comprobarEmailpost: async (req, res) => {
+    postComprobarEmail: async (req, res) => {
         try {
             const email = req.body.email
-            const credenciales = await Credenciales.findOne({ email }).lean()
+            const credenciales = await _findCredenciales({email})
 
             if (credenciales != null) {
                 // envio correo para poder cambiar la password
-                
-                res.redirect("http://localhost:3000/Cliente/Login")
+                res.redirect(URL.LOGIN)
             } else {    
                 res.status(200).render('Cliente/CompruebaEmail.hbs', { layout: null, mensajeError: "Fallo en la conexion con el servidor,intentelo mas tarde..." })
             }
@@ -156,21 +161,20 @@ module.exports = {
             res.status(200).render('Cliente/Registro.hbs', { layout: null, mensajeError: 'Error interno del servidor, intentelo de nuevo mas tarde...' })
         }
     },
-    cambioPasswordget: (req, res) => {
+    getCambioPassword: (req, res) => {
         res.status(200).render('Cliente/Password.hbs', { layout: null })
     },
-    cambioPasswordpost: async (req, res) => {
+    postCambioPassword: async (req, res) => {
 
     },
-    miPerfilget: (req, res) => {
+    getMiPerfil: (req, res) => {
         /** 
          * usamos un middleware en routingCliente.js para comprobar si existe constiable de session 
-         * en rutas Cliente/Panel/*, en el se añaden las prop "cliente", "listaOpcCliene" a la request
+         * en rutas Cliente/Panel/*, en el se añaden las prop "cliente", "opcionesPanelPerfil" a la request
          */ 
-        res.status(200).render('Cliente/MiPerfil.hbs', { cliente: req.cliente,  listaOpcCliente: req.opPanelCliente })
-
+        res.status(200).render('Cliente/MiPerfil.hbs', { cliente: req.cliente,  opcionesPanel: req.opcionesPanelPerfil })
     },
-    miPerfilpost: async (req, res) => {
+    postMiPerfil: async (req, res) => {
         // actualizamos datos cliente y session 
         for (const prop in req.body) {
             req.cliente[prop] = req.body[prop]
@@ -186,27 +190,31 @@ module.exports = {
                             
         Promise
             .all([ updateCliente, updateCredenciales ]) 
-            .then((results) => {
+            .then(() => {
                 //actualizamos session
                 req.session.cliente = cliente
                 
-                res.status(200).render('Cliente/PanelInicio.hbs', { cliente: cliente, listaOpcCliente: req.opPanelCliente })
+                res.status(200).render('Cliente/PanelInicio.hbs', { cliente: cliente, opcionesPanel: req.opcionesPanelPerfil })
             })
-            .catch((err)=>{
+            .catch((err) => {
                 res.status(200).render('Cliente/PanelInicio.hbs',{
                     cliente: cliente, 
-                    listaOpcCliente: req.opPanelCliente, 
-                    mensajesError: 'Wrror interno en el servidor, intentelo de nuevo mas tarde...' 
+                    opcionesPanel: req.opcionesPanelPerfil, 
+                    mensajeError: 'Error interno en el servidor, intentelo de nuevo mas tarde...' 
                 })
             })
     },
-    panelInicio: (req, res) => {
-        res.status(200).render('Cliente/PanelInicio.hbs', { cliente: req.cliente, listaOpcCliente: req.opcPanelCliente })
+    getPanelInicio: (req, res) => {
+        res.status(200).render('Cliente/PanelInicio.hbs', { cliente: req.cliente, opcionesPanel: req.opcionesPanelPerfil })
     }
 } 
 
-async function _devolverProvincias() {
-    return Provincias.find().sort({NombreProvincia: 'asc'}).lean() 
+async function _findProvincias() {
+    return Provincia.find().sort({nombreProvincia: 1}).lean()  // utilizar lean ya que handlebas no admite propiedades de mongoose
+}
+
+async function _findCredenciales({email}) {
+    return Credenciales.findOne({email}).select('_id').lean()
 }
 
 async function _emailConfirmacionRegistro({email, nombre}) {

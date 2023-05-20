@@ -1,30 +1,30 @@
 const express = require('express')
 const router = express.Router()  
-const ClienteController = require('../controllers/clienteController')
+const clienteController = require('../controllers/clienteController')
 
 router.route('/Registro')
-      .get(ClienteController.getRegistro)
-      .post(ClienteController.postRegistro)
+      .get(clienteController.getRegistro)
+      .post(clienteController.postRegistro)
 
 router.route('/Login')
-      .get(ClienteController.getLogin)
-      .post(ClienteController.postLogin) 
+      .get(clienteController.getLogin)
+      .post(clienteController.postLogin) 
 
-router.get("/ActivarCuenta/:email", ClienteController.activarCuentaget)
+router.get("/ActivarCuenta/:email", clienteController.getActivarCuenta)
 
 router.route('/CompruebaEmail')
-      .get(ClienteController.comprobarEmailget)
-      .post(ClienteController.comprobarEmailpost)
+      .get(clienteController.getComprobarEmail)
+      .post(clienteController.postComprobarEmail)
 
 router.route('/CambioPassword')
-      .get(ClienteController.cambioPasswordget)
-      .post(ClienteController.cambioPasswordpost)
+      .get(clienteController.getCambioPassword)
+      .post(clienteController.postCambioPassword)
 
 router.all("/Panel/*", _checkSessionCliente, _cargarOpcionesPanelCliente) 
-router.get("/Panel/PanelInicio", ClienteController.panelInicio)                                                                    
+router.get("/Panel/PanelInicio", clienteController.getPanelInicio)                                                                    
 router.route('/Panel/MiPerfil')
-      .get(ClienteController.miPerfilget)
-      .post(ClienteController.miPerfilpost)
+      .get(clienteController.getMiPerfil)
+      .post(clienteController.postMiPerfil)
 
 function _checkSessionCliente(req, res, next) {  
       if (req.session.cliente == undefined || req.session.cliente == null || req.session.cliente == '') {
@@ -38,16 +38,16 @@ function _checkSessionCliente(req, res, next) {
 
 function _cargarOpcionesPanelCliente(req, res, next) { 
       const listaOpcionesPanel = [
-            "Inicio-PanelInicio", 
-            "Mi Perfil-MiPerfil",
-            "Mis Datos de Envio-MisDatosEnvio",
-            "Mis Gustos-MisGustos", 
-            "Mis Opiniones-MisOpiniones",
-            "Mi Lista de Deseios-MiListaDeseos",
-            "Volver a Agapea-Inicio",
-            "Desconectarse-Logout"
+            "Inicio:PanelInicio", 
+            "Mi Perfil:MiPerfil",
+            "Mis Datos de Envio:MisDatosEnvio",
+            "Mis Gustos:MisGustos", 
+            "Mis Opiniones:MisOpiniones",
+            "Mi Lista de Deseios:MiListaDeseos",
+            "Volver a Agapea:Inicio",
+            "Desconectarse:Logout"
       ] 
-      req.opPanelCliente = listaOpcionesPanel 
+      req.opcionesPanelPerfil = listaOpcionesPanel 
       next()
 }
 

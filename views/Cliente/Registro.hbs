@@ -42,7 +42,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="usernick"><strong>Usuario (nickname)</strong></label>
-                                    <input type="text" class="form-control" id="usernick" name="login" placeholder="escribe aqui tu nick...">
+                                    <input type="text" class="form-control" id="usernick" name="username" placeholder="escribe aqui tu nick...">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="inputEmail"><strong>Correo Electronico</strong></label>
@@ -126,7 +126,7 @@
         </div>
     </div>  
     <script>
-        //---------------dropdown municipios-------------------------
+        //----------------------- dropdown municipios --------------------------
         $('#inputProvincia').change(function(evt) {
             $('#inputLocalidad > option').each((index, elem) => {
                 if (elem.value != 0 ) { 
