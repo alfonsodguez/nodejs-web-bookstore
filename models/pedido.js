@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Libro = require('./libro')
 
-const pedidosSchema = new mongoose.Schema({
+const pedidoSchema = new mongoose.Schema({
     gastosEnvio:    { type: Number, required: true, default: 0 },
     subTotalPedido: { type: Number, required: true, default: 0 },
     totalPedido:    { type: Number, required: true, default: 0 },
@@ -13,7 +13,7 @@ const pedidosSchema = new mongoose.Schema({
         cantidadItem: { type: Number, required: true, default: 1 } 
     }]
 })
-module.exports = mongoose.model('Pedido', pedidosSchema, 'pedidos')
+module.exports = mongoose.model('Pedido', pedidoSchema, 'pedidos')
 
 pedidosSchema.methods.CalcularTotalPedido = async function() {
     const elemPedidoExpanded = await Libro.populate(this.elementosPedido, { path: 'libroItem' })

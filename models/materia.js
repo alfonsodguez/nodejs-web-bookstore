@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
-const materiasSchema = new mongoose.Schema({
+const materiaSchema = new mongoose.Schema({
     idMateria: { type: Number, required: true },
     idMateriaPadre: { type: Number, required: true },
     nombreMateria:  { type: String, required: true }
 }) 
-module.exports = mongoose.model('Materias', materiasSchema, 'materias')
+module.exports = mongoose.model('Materias', materiaSchema, 'materias')
