@@ -59,19 +59,19 @@
     <div class="container">
         <div class="row">
             <div class="col-2">
-                {{#unless this.listaOpcCliente}} 
+                {{#unless this.opcionesPanel}} 
                     <div class="list-group">
-                        {{#each this.listaMaterias as |unamateria| }}
-                            <a class="list-group-item list-group-item-action" href="http://localhost:3000/Tienda/Libros/{{unamateria.idMateria}}">
-                                {{split unamateria.NombreMateria ';' 0}}    
+                        {{#each this.listaMaterias as |materia| }}
+                            <a class="list-group-item list-group-item-action" href="http://localhost:3000/Tienda/Libros/{{materia.idMateria}}">
+                                {{split materia.NombreMateria ';' 0}}    
                             </a>
                         {{/each}}
                     </div>
                 {{else}}
                     <div class="list-group">
-                        {{#each this.listaOpcCliente as |opcCliente| }}
-                            <a class="list-group-item list-group-item-action" href="http://localhost:3000/Cliente/Panel/{{split opcCliente '-' 1}}">
-                                {{split opcCliente '-' 0}}    
+                        {{#each this.opcionesPanel as |opcion| }}
+                            <a class="list-group-item list-group-item-action" href="http://localhost:3000/Cliente/Panel/{{split opcion ':' 1}}">
+                                {{split opcion ':' 0}}    
                             </a>
                         {{/each}}
                     </div>
