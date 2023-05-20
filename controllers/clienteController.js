@@ -120,9 +120,7 @@ module.exports = {
 
                 res.redirect(URL.LIBROS)
             }
-            else {
-                res.status(200).render('Cliente/Login.hbs', { layout: null, mensajeErrorCustom: "Email o contraseña incorrectas, vuelve a intentarlo" })
-            }
+            res.status(200).render('Cliente/Login.hbs', { layout: null, mensajeErrorCustom: "Email o contraseña incorrectas, vuelve a intentarlo" })
         } catch (err) {
             res.status(200).render('Cliente/Login.hbs', { layout: null, mensajeError: 'Error en el server...' })
         }   
@@ -154,9 +152,8 @@ module.exports = {
             if (credenciales != null) {
                 // envio correo para poder cambiar la password
                 res.redirect(URL.LOGIN)
-            } else {    
-                res.status(200).render('Cliente/CompruebaEmail.hbs', { layout: null, mensajeError: "Fallo en la conexion con el servidor,intentelo mas tarde..." })
-            }
+            }     
+            res.status(200).render('Cliente/CompruebaEmail.hbs', { layout: null, mensajeError: "Fallo en la conexion con el servidor,intentelo mas tarde..." })
         } catch (err) {
             res.status(200).render('Cliente/Registro.hbs', { layout: null, mensajeError: 'Error interno del servidor, intentelo de nuevo mas tarde...' })
         }
