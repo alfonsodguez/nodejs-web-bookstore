@@ -1,12 +1,12 @@
 const express = require('express')                           
 const mongoose = require('mongoose')
-const configServer  = require('./config_server/middleware')  
-const routingServer = require('./config_server/routingMAIN')
+const config = require('./config_server/middleware')  
+const routing = require('./config_server/routingMAIN')
 require('dotenv').config()
 
 const app = express()  
-configapp(app)    
-routingapp(app)   
+config(app)    
+routing(app)   
 app.listen(3000)    
 
 mongoose.connect(process.env.MONGO_URI, (err, data) => {
