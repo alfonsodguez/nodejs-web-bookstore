@@ -23,7 +23,7 @@ module.exports = (app) => {
                 maxAge: 360000,
         }
     }))
-    //-------- configuracion view-engine handlebars ----------------------
+    //-------- configuracion view-engine handlebars -----------
     app.set('views', __dirname + '/../views')
     app.engine('hbs', viewEngine.create(
         {
