@@ -1,5 +1,5 @@
 const logger = require('winston')
-const Materias = require('../models/materias')
+const Materia = require('../models/materias')
 const Libro = require('../models/libro')
 
 module.exports = {
@@ -43,5 +43,5 @@ module.exports = {
 }
 
 async function _devolverMaterias({materiaId}){
-    return Materias.find({IdMateriaPadre: materiaId}).lean()
+    return Materia.find({IdMateriaPadre: materiaId}).lean()
 }

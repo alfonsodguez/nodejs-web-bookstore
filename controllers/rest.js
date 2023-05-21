@@ -1,11 +1,11 @@
 const logger = require('winston')
-const Municipios = require('../models/municipio')
+const Municipio = require('../models/municipio')
 
 module.exports = {
     getMunicipios: async (req, res) => {
         try {
             const codPro = req.params.codPro
-            const municipios = await Municipios.find({ codPro: codPro }).lean()
+            const municipios = await Municipio.find({codPro: codPro}).lean()
 
             res.status(200).json(municipios)
         } catch (err) {
