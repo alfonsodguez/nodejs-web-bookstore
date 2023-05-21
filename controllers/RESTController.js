@@ -1,5 +1,5 @@
 const logger = require('winston')
-const Municipios = require('../models/municipios')
+const Municipios = require('../models/municipio')
 
 module.exports = {
     getMunicipios: async (req, res) => {
