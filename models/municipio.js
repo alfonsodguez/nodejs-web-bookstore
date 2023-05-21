@@ -5,4 +5,4 @@ const municipioSchema = new mongoose.Schema({
     codMun: { type: Number, required: true },
     nombre: { type: String, required: true }
 })
-module.exports = mongoose.model('Municipios',municipioSchema,'municipios')
+module.exports = mongoose.model('Municipio', municipioSchema, 'municipios')
