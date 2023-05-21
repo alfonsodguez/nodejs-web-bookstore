@@ -1,10 +1,10 @@
 const express = require("express")
 const multer = require('multer') 
 const router = express.Router()
-const RestController = require('../controllers/RESTController')
+const restController = require('../controllers/rest')
 
-router.get('/getMunicipios/:codPro', RestController.getMunicipios) 
-router.post('/uploadImagen', _upload.single('imagen'), RestController.uploadImagen)   // 'imagen' es el nombre de la variable a la cual pasas el fichero en la pet ajax en MiPerfil.hbs
+router.get('/getMunicipios/:codPro', restController.getMunicipios) 
+router.post('/uploadImagen',         _upload.single('imagen'), restController.uploadImagen)   // 'imagen' es el nombre de la variable a la cual pasas el fichero en la pet ajax en MiPerfil.hbs
 
 const options = {
     destination: function (req, file, callback) { 

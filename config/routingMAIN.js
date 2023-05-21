@@ -8,7 +8,7 @@ const routePedido = require('./routingPedido')
 
 module.exports = (app) => {  
     app.use('/Cliente', routeCliente)    
-    app.use('/Tienda', routeTienda)
-    app.use('/Pedido', routePedido)
-    app.use('/api', routeREST) 
+    app.use('/Tienda',  routeTienda)
+    app.use('/Pedido',  routePedido)
+    app.use('/api',     routeREST) 
 }
