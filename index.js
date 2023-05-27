@@ -1,7 +1,7 @@
 const express = require('express')                           
 const mongoose = require('mongoose')
 const config = require('./config/middleware')  
-const routing = require('./config/routingMAIN')
+const routing = require('./config/main')
 require('dotenv').config()
 
 const app = express()  

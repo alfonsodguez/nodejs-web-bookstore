@@ -150,7 +150,7 @@ module.exports = {
             const credenciales = await _findCredenciales({email})
 
             if (credenciales != null) {
-                // envio correo para poder cambiar la password
+                // TODO: envio correo para poder cambiar la password
                 res.redirect(URL.LOGIN)
             }     
             res.status(200).render('Cliente/CompruebaEmail.hbs', { layout: null, mensajeError: "Fallo en la conexion con el servidor,intentelo mas tarde..." })
@@ -162,7 +162,7 @@ module.exports = {
         res.status(200).render('Cliente/Password.hbs', { layout: null })
     },
     postCambioPassword: async (req, res) => {
-
+        // TODO
     },
     getMiPerfil: (req, res) => {
         /** 
