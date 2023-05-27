@@ -2,13 +2,13 @@ const mongoose = require('mongoose')
 const Libro = require('./libro')
 
 const pedidoSchema = new mongoose.Schema({
-    gastosEnvio:    { type: Number, required: true, default: 0 },
-    subTotalPedido: { type: Number, required: true, default: 0 },
-    totalPedido:    { type: Number, required: true, default: 0 },
-    estadoPedido:   { type: String, required: true, default: 'pendiente' },
-    fechaPedido:    { type: Date,   required: true, default: Date.now },
-    clientePedido:  { type: mongoose.Schema.Types.ObjectId, ref: 'Cliente' },
-    elementosPedido: [{
+    gastosEnvio: { type: Number, required: true, default: 0 },
+    subtotal:    { type: Number, required: true, default: 0 },
+    total:       { type: Number, required: true, default: 0 },
+    estado:      { type: String, required: true, default: 'pendiente' },
+    fecha:       { type: Date,   required: true, default: Date.now() },
+    cliente:     { type: mongoose.Schema.Types.ObjectId, ref: 'Cliente' },
+    articulos: [{
         libroItem:    { type: mongoose.Schema.Types.ObjectId, ref: 'Libro' },
         cantidadItem: { type: Number, required: true, default: 1 } 
     }]
@@ -16,14 +16,14 @@ const pedidoSchema = new mongoose.Schema({
 module.exports = mongoose.model('Pedido', pedidoSchema, 'pedidos')
 
 pedidosSchema.methods.CalcularTotalPedido = async function() {
-    const elemPedidoExpanded = await Libro.populate(this.elementosPedido, { path: 'libroItem' })
+    const articulosExpandidos = await Libro.populate(this.articulos, { path: 'libroItem' })
 
     const subtotal = 0
-    elemPedidoExpanded.forEach((itemPedido) => {
+    articulosExpandidos.forEach((itemPedido) => {
         subtotal += itemPedido.cantidadItem * itemPedido.libroItem.precio
     })
 
-    this.subTotalPedido = Math.round(subtotal * 100)/100
-    this.totalPedido = Math.round((subtotal + this.gastosEnvio) * 100)/100
+    this.subtotal = Math.round(subtotal * 100)/100
+    this.total = Math.round((subtotal + this.gastosEnvio) * 100)/100
 }
 

@@ -14,9 +14,9 @@
             <button class="btn btn-outline-primary" id="botonUploadImagen" disabled>Subir Imagen</button>
         </div>
         <div class="col-9">
-            {{#if this.mensajesError}}
+            {{#if this.mensajeError}}
                  <div id="mensajesError">
-                     <p><span style="text-danger">{{this.mensajesError}}</span></p>
+                     <p><span style="text-danger">{{this.mensajeError}}</span></p>
                  </div>
             {{/if}}
             <form method='post' id='formGuardar' action='http://localhost:3000/Cliente/Panel/MiPerfil'>

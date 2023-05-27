@@ -14,18 +14,18 @@
         <h3><b>RESUMEN DE LA CESTA:</b></h3>
     </div>
     <hr/>
-    {{#if this.messjError}}
+    {{#if this.mensajeError}}
         <div class="row">
             <div class="col">
-                <span class="text-danger">{{this.errores}}</span>
+                <span class="text-danger">{{this.mensajeError}}</span>
             </div>
         </div>
     {{/if}}
     <div class="container">
-        {{#each pedido.elementosPedido as |itemlibro| }}
+        {{#each pedido.articulos as |itemLibro| }}
             <div class="row">
                 <div class="col">
-                    {{>_VistaParcialItemPedido itemlibro}}
+                    {{>_VistaParcialItemPedido itemLibro}}
                 </div>
             </div>
         {{/each}}
@@ -36,7 +36,7 @@
                 <h5><strong>Subtotal:</strong></h5>
             </div>
             <div class="col-2">
-                <h5><span style="color: red;">{{pedido.subTotalPedido}} €</span></h5>
+                <h5><span style="color: red;">{{pedido.subtotal}} €</span></h5>
             </div>
         </div>
         <div class="row">
@@ -54,7 +54,7 @@
                 <h4><strong>Total a pagar:</strong></h4>
             </div>
             <div class="col-2">
-                <h4><span style="color: red;">{{pedido.totalPedido}} €</span></h4>
+                <h4><span style="color: red;">{{pedido.total}} €</span></h4>
             </div>
         </div>
         <div class="row">

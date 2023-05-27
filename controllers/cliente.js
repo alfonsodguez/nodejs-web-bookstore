@@ -63,8 +63,8 @@ module.exports = {
             cp,
             provincia: provincia._id,
             municipio: municipio._id, 
-            esprincipal: true,
-            clienteid: clienteId
+            esPrincipal: true,
+            clienteId: clienteId
         }).save() 
 
         // resolvemos las querys
@@ -98,19 +98,19 @@ module.exports = {
                             { path: 'provincia', model: Provincia },
                             { path: 'municipio', model: Municipio }
                         ]},
-                        { path: 'historicoPedidos', model: Pedido, populate: { path: 'elementosPedido.libroItem', model: Libro } }
+                        { path: 'historicoPedidos', model: Pedido, populate: { path: 'articulos.libroItem', model: Libro } }
                     ])
                     .lean()                                                                                 
 
                 const newPedido = new Pedido({
                     _id: new mongoose.Types.ObjectId, 
                     gastosEnvio: 0.5,
-                    subTotalPedido: 0,
-                    totalPedido: 0,
-                    estadoPedido: 'pendiente',
-                    fechaPedido: Date.now(),
-                    clientePedido: cliente._id,
-                    elementosPedido: [] 
+                    subtotal: 0,
+                    total: 0,
+                    estado: 'pendiente',
+                    fecha: Date.now(),
+                    cliente: cliente._id,
+                    articulos: [] 
                 })
 
                 cliente.pedidoActual = newPedido    

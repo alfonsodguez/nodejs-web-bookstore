@@ -12,12 +12,12 @@ module.exports = {
             //recuperar session y añadir libro expandido al pedido
             const pedido = new Pedido(req.session.cliente.pedidoActual) 
 
-            const libro = pedido.elementosPedido.find((libro) => libro.libroItem === libroId)
+            const libro = pedido.articulos.find((libro) => libro.libroItem === libroId)
             if (libro != null) {
                 libro.cantidadItem += 1
             }
             else {
-                pedido.elementosPedido.push({ libroItem: libroId, cantidadItem: 1 })
+                pedido.articulos.push({ libroItem: libroId, cantidadItem: 1 })
             }
 
             await _renderizarMostrarPedido({pedido, req, res})
@@ -29,7 +29,7 @@ module.exports = {
         const libroId = req.params.id
         const pedido = new Pedido(req.session.cliente.pedidoActual)  
 
-        pedido.elementosPedido.forEach(libro => {
+        pedido.articulos.forEach(libro => {
             if (libro.libroItem === libroId ) {
                 libro.cantidadItem += 1 
             }
@@ -41,13 +41,13 @@ module.exports = {
         const libroId = req.params.id
         const pedido = new Pedido(req.session.cliente.pedidoActual)
 
-        const indexLibro = pedido.elementosPedido.findIndex(libro => libro.libroItem === libroId)
+        const indexLibro = pedido.articulos.findIndex(libro => libro.libroItem === libroId)
 
         if (indexLibro != -1) {
-            const cantidad = pedido.elementosPedido[indexLibro].cantidadItem
+            const cantidad = pedido.articulos[indexLibro].cantidadItem
 
             if (cantidad > 1) {
-                pedido.elementosPedido[indexLibro].cantidadItem -= 1
+                pedido.articulos[indexLibro].cantidadItem -= 1
             }
             else {
                 _eliminarLibroPedido({pedido, libroId})
@@ -61,7 +61,7 @@ module.exports = {
 
         _eliminarLibroPedido({pedido, libroId})
             
-        if(pedido.elementosPedido.length > 0){
+        if(pedido.articulos.length > 0){
             await _renderizarMostrarPedido(pedido, req, res)            
         }
         else{
@@ -90,8 +90,8 @@ module.exports = {
             
             if (updateCliente === 1) {
                 //expandimos pedido para generar factura....
-                const itemsExpanded = await Libro.populate(pedido.elementosPedido, { path: 'libroItem' })
-                pedido.elementosPedido= itemsExpanded
+                const itemsExpanded = await Libro.populate(pedido.articulos, { path: 'libroItem' })
+                pedido.articulos= itemsExpanded
             
                 _crearFacturaPDF({pedido})
                 await _emailEnvioPdf({cliente})
@@ -105,14 +105,14 @@ module.exports = {
 }
 
 function _eliminarLibroPedido({pedido, libroId}) {
-    const borrarLibro = pedido.elementosPedido.filter(libro => libro.libroItem != libroId)
+    const borrarLibro = pedido.articulos.filter(libro => libro.libroItem != libroId)
     
-    pedido.elementosPedido = borrarLibro
+    pedido.articulos = borrarLibro
 }
 
 async function _renderizarMostrarPedido({pedido, req, res}) {
     await pedido.CalcularTotalPedido()
-    pedido.elementosPedido = await Libro.populate(pedido.elementosPedido, { path: 'libroItem' })
+    pedido.articulos = await Libro.populate(pedido.articulos, { path: 'libroItem' })
 
     //actualizamos session 
     req.session.cliente.pedidoActual = pedido           
@@ -132,7 +132,7 @@ function _crearFacturaPDF({pedido}) {
     factura.fontSize(20).text(cabecera)
     factura.fontSize(20).text(separador)
     
-    const filas = pedido.elementosPedido.map(itemPedido => {
+    const filas = pedido.articulos.map(itemPedido => {
         return [
             itemPedido.libroItem.titulo,
             itemPedido.libroItem.precio,
@@ -142,13 +142,13 @@ function _crearFacturaPDF({pedido}) {
     })
 
     const tablaItemsPedido = {
-        headers: ["Titulo del Libro", "Precio del Libro", "Cantidad de libros", "SubTotal Libro"],
+        headers: ["Titulo del Libro", "Precio del Libro", "Cantidad de libros", "Subtotal Libro"],
         rows: filas
     }
 
     factura.table(tablaItemsPedido, { width: 300 })
     factura.fontSize(20).text(separador)
-    factura.fontSize(20).text('SubTotal Pedido: ' + pedido.subTotalPedido + ' €')
+    factura.fontSize(20).text('Subtotal Pedido: ' + pedido.subtotal + ' €')
     factura.fontSize(18).text('Gastos de Envio: ' + pedido.GastosDeEnvio + ' €')
     factura.fontSize(20).text('TOTAL PEDIDO: ' + pedido.totalPedido + ' €')
     factura.end()
@@ -156,7 +156,7 @@ function _crearFacturaPDF({pedido}) {
 
 async function _emailEnvioPdf({cliente}) {
     const pedidoId = cliente.pedidoActual._id.toString()
-    const direccionPpal = cliente.direcciones.find((direccion) => direccion.esprincipal === true)
+    const direccionPpal = cliente.direcciones.find((direccion) => direccion.esPrincipal === true)
     const pdfPath = '/pdf/factura-' + pedidoId + '.pdf'
 
     // pasar el contendio del fichero .pdf a base64 para poderse mandar por email

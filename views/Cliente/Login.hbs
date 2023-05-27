@@ -43,10 +43,10 @@
                         <label for="email"><strong>Correo Electronico: </strong></label>
                         <input id="email" type="email" name="email" class="form-control" placeholder="Introduce su correo electronico aqui..."/>                
                     </div>                        
-                    {{#if mensErrPersonalizado}}
+                    {{#if mensajeErrorCustom}}
                         <div class="row">
                             <div class="col">
-                                <span class="text-danger"><small>{{mensajeErrorPersonalizado}}</small></span>
+                                <span class="text-danger"><small>{{mensajeErrorCustom}}</small></span>
                             </div>
                         </div>
                     {{/if}}
@@ -54,10 +54,10 @@
                         <label for="password"><strong>Password: </strong></label>
                         <input id="password" type="password" name="password" class="form-control" placeholder="Introduce aqui su contraseña"/>                
                     </div>
-                    {{#if mensErrPersonalizado}}
+                    {{#if mensajeErrorCustom}}
                         <div class="row">
                             <div class="col">
-                                <span class="text-danger"><small>{{mensajeErrorPersonalizado}}</small></span>
+                                <span class="text-danger"><small>{{mensajeErrorCustom}}</small></span>
                             </div>
                         </div>
                     {{/if}}
