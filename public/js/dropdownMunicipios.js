@@ -1,10 +1,11 @@
 $('#inputProvincia').change(function(evt) {
-    $('#inputLocalidad > option').each((index, elem) => {
-        if (elem.value != 0 ) { 
-            elem.remove()
+    $('#inputLocalidad > option').each((index, option) => {
+        if (option.value != 0 ) { 
+            option.remove()
         }
     })            
-    if (evt.target.value != 0) {
+    const codPro = evt.target.value
+    if (codPro != 0) {
         $('#inputLocalidad').prop("disabled", false)
 
         const url = 'http://localhost:3000/api/getMunicipios/' + $(this).val()
@@ -12,7 +13,7 @@ $('#inputProvincia').change(function(evt) {
             .then(bodyMunicipios => bodyMunicipios.json()) 
             .then(municipios => municipios.forEach(municipio => { 
                 //construimos tags option
-                $('#inputLocalidad').append(`<option value=${municipio.codMun}>${municipio.NombreMunicipio}</option>`)
+                $('#inputLocalidad').append(`<option value=${municipio.codMun}>${municipio.nombreMunicipio}</option>`)
             })) 
             .catch(error => console.log('error munis', error))
     }           

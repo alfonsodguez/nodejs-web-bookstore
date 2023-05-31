@@ -6,19 +6,19 @@
             </div>
         </div>
         <div class="col-5">
-            <h5><strong>{{this.unlibro.titulo}}</strong></h5>
-            <h5>{{this.unlibro.autor}}</h5>
+            <h5><strong>{{this.libro.titulo}}</strong></h5>
+            <h5>{{this.libro.autor}}</h5>
             <hr />
             <p>Detalles Libro:</p>
-            <p>editorial: {{this.unlibro.editorial}}</p>
-            <p>Paginas  : {{this.unlibro.NumeroPaginas}}</p>
-            <p>iSBN     : {{this.unlibro.iSBN}}</p>
-            <p>iSBN13   : {{this.unlibro.iSBN13}}</p>
+            <p>editorial: {{this.libro.editorial}}</p>
+            <p>Paginas  : {{this.libro.numeroPaginas}}</p>
+            <p>iSBN     : {{this.libro.iSBN}}</p>
+            <p>iSBN13   : {{this.libro.iSBN13}}</p>
         </div>
         <div class="col-4">
-            <h2><strong>{{this.unlibro.precio}} €</strong></h2>
+            <h2><strong>{{this.libro.precio}} €</strong></h2>
             <img src="/public/images/imagenComprar_detallesLibro.png" />
-            <a href="http://localhost:3000/Pedido/AddLibroPedido/{{this.unlibro._id}}" class="btn btn-primary">
+            <a href="http://localhost:3000/Pedido/AddLibroPedido/{{this.libro._id}}" class="btn btn-primary">
                 <img src="/public/images/BotonComprarLibroDetalles.png" />
             </a>
         </div>
@@ -27,7 +27,7 @@
         <div class="col">
             <h3>Resumen</h3>
             <div>
-                {{this.unlibro.descripcion}}
+                {{this.libro.descripcion}}
             </div>
         </div>
     </div>
