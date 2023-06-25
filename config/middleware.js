@@ -29,8 +29,8 @@ module.exports = (app) => {
         {
             extname: 'hbs',
             defaultLayout: '__Layout',
-            layoutsPath: __dirname + '/../views/shared/Layouts',
-            partialsPath: __dirname + '/../views/shared/Partials',
+            layoutsDir: __dirname + '/../views/shared/Layouts',
+            partialsDir: __dirname + '/../views/shared/Partials',
             helpers: {
                 split: (cadena, separador, posicion) => cadena.split(separador)[posicion],
                 operacion: (valor1, operador, valor2) => {
