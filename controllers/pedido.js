@@ -4,6 +4,7 @@ const logger = require('winston')
 const Libro = require('../models/libro')
 const Pedido = require('../models/pedidos')
 const Cliente = require('../models/cliente')
+const emailSevice = require('../models/email-service')
 
 module.exports = {
     addLibroPedido: async (req, res) => {
