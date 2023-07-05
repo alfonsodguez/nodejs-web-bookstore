@@ -7,5 +7,6 @@ const direccionSchema = new mongoose.Schema({
     provincia:   { type: mongoose.Schema.Types.ObjectId, ref:'Provincias' },
     municipio:   { type: mongoose.Schema.Types.ObjectId, ref: 'Municipios' },
     clienteId:   { type: mongoose.Schema.Types.ObjectId, ref:'Cliente' }
-})
+}, { timestamps: true})
+
 module.exports = mongoose.model('Direccion', direccionSchema, 'direcciones')

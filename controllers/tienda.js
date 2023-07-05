@@ -1,47 +1,55 @@
-const logger = require('winston')
+const Bluebird = require('bluebird')
 const Materia = require('../models/materias')
 const Libro = require('../models/libro')
+
+const RENDER_PATH = {
+    LIBROS: 'Tienda/Libros.hbs',
+    DETALLES_LIBRO: 'Tienda/MostrarLibros.hbs'
+}
+const DEFAULT_ID_MATERIA = 0
 
 module.exports = {
     getLibros: async (req, res) => {
        try {
-           const idMateria = req.params.idmateria
-           const libros = await Libro.find({'idMateria': idMateria}).lean()
+            const cliente = req.session.cliente
+            const idMateria = req.params.idmateria
+
+            const [libros, listaMaterias] = await Bluebird.all([
+                Libro.find({ idMateria }).lean(),
+                _devolverMaterias()
+            ])
                         
             const tuplasDeTresLibros = []
-            for (const pos = 0; pos < libros.length; pos = pos + 3) {
+            for (const pos=0; pos<libros.length; pos=pos+3) {
+
                 const tresLibros = libros.slice(pos, pos + 3)
+                
                 tuplasDeTresLibros.push(tresLibros)               
             }
 
-            const idMateriaPadre = '0'
-            const listaMaterias = await _devolverMaterias({materiaId: idMateriaPadre})
-
-            res.status(200).render('Tienda/Libros.hbs', { 
-                listaMaterias: listaMaterias,
-                listaLibros: tuplasDeTresLibros,
-                cliente: req.session.cliente   
-            })
-
+            res.status(200).render(RENDER_PATH.LIBROS, { listaMaterias, listaLibros: tuplasDeTresLibros, cliente })
         } catch (err) {
-           logger.error('Error al recuperar libros o materias', err)
+            console.log('Error al recuperar libros o materias', err)
+            res.status(500).send()
         }       
     },
     getMostrarLibro: async (req, res) => {
         try {
             const libroId = req.params.id
-            const libro = await Libro.findById({_id: libroId}).lean()
 
-            const idMateriPadre = '0' 
-            const listaMaterias = await _devolverMaterias({materiaId: idMateriPadre})
+            const [libro, listaMaterias] = await Bluebird.all([
+                Libro.findById(libroId).lean(),
+                _devolverMaterias()
+            ])
 
-            res.status(200).render('Tienda/MostrarLibro.hbs', { listaMaterias: listaMaterias, unlibro: libro })
+            res.status(200).render(RENDER_PATH.DETALLES_LIBRO, { listaMaterias, libro })
         } catch (err) {
-            logger.error('Error al recuperar libros ', err)
+            console.log('Error al recuperar libros ', err)
+            res.status(500).send()
         }
     }
 }
 
-async function _devolverMaterias({materiaId}){
-    return Materia.find({IdMateriaPadre: materiaId}).lean()
+async function _devolverMaterias() {
+    return Materia.find({ idMateriaPadre: DEFAULT_ID_MATERIA }).lean()
 }

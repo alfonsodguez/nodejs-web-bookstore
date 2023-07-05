@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "bluebird": "^3.7.2",
     "connect-mongo": "^4.6.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^10.0.0",

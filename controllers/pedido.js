@@ -1,34 +1,34 @@
 const fs = require('fs')
 const pdfDocument = require('pdfkit-table')
-const logger = require('winston')
 const Libro = require('../models/libro')
 const Pedido = require('../models/pedidos')
 const Cliente = require('../models/cliente')
 const emailSevice = require('../models/email-service')
+
+const URL_HOME = '/Tienda/Libros/0'
 
 module.exports = {
     addLibroPedido: async (req, res) => {
         try {           
             const libroId = req.params.id
             //recuperar session y añadir libro expandido al pedido
-            const pedido = new Pedido(req.session.cliente.pedidoActual) 
-
+            const pedido = new Pedido(req.session.cliente.pedidoActual)
             const libro = pedido.articulos.find((libro) => libro.libroItem === libroId)
-            if (libro != null) {
+
+            if (libro) {
                 libro.cantidadItem += 1
             }
-            else {
-                pedido.articulos.push({ libroItem: libroId, cantidadItem: 1 })
-            }
+            
+            pedido.articulos.push({ libroItem: libroId, cantidadItem: 1 })
 
             await _renderizarMostrarPedido({pedido, req, res})
         } catch (err) {
-            logger.error('Error interno del servidor ', err)
+            res.status(500).send()
         }
     },
     sumarCantidadPedido: async (req, res) => {
         const libroId = req.params.id
-        const pedido = new Pedido(req.session.cliente.pedidoActual)  
+        const pedido = req.session.cliente.pedidoActual
 
         pedido.articulos.forEach(libro => {
             if (libro.libroItem === libroId ) {
@@ -40,7 +40,7 @@ module.exports = {
     },
     restarCantidadPedido: async (req, res) => {
         const libroId = req.params.id
-        const pedido = new Pedido(req.session.cliente.pedidoActual)
+        const pedido = req.session.cliente.pedidoActual
 
         const indexLibro = pedido.articulos.findIndex(libro => libro.libroItem === libroId)
 
@@ -50,65 +50,71 @@ module.exports = {
             if (cantidad > 1) {
                 pedido.articulos[indexLibro].cantidadItem -= 1
             }
-            else {
-                _eliminarLibroPedido({pedido, libroId})
-            }
+            
+            pedido.articulos = _eliminarLibroPedido({pedido, libroId})
         }
         await _renderizarMostrarPedido(pedido,req, res)
     },
     eliminarLibroPedido: async (req, res) => {
         const libroId = req.params.id
-        const pedido = new Pedido(req.session.cliente.pedidoActual)
+        const pedido = req.session.cliente.pedidoActual
 
-        _eliminarLibroPedido({pedido, libroId})
+        pedido.articulos = _eliminarLibroPedido({pedido, libroId})
             
-        if(pedido.articulos.length > 0){
+        if (pedido.articulos.length > 0) {
             await _renderizarMostrarPedido(pedido, req, res)            
         }
-        else{
-            //actualizar datos pedido
-            pedido.CalcularTotalPedido()
 
-            //actualizar session 
-            req.session.cliente.pedidoActual = pedido
+        //actualizar datos pedido
+        pedido.CalcularTotalPedido()
 
-            res.status(200).redirect('/Tienda/Libros/0')
-        }
+        //actualizar session 
+        req.session.cliente.pedidoActual = pedido
+
+        res.status(200).redirect(URL_HOME)      
     },
     finalizarPedido: async (req, res) => {
         try {
-            const pedido = new Pedido(req.session.cliente.pedidoActual)
-            pedido.estadoPedido = 'en curso'
-            const insertPedido = await Pedido(pedido).save()  
-
-            const cliente = new Cliente(req.session.cliente)
-            cliente.historicoPedidos.push(insertPedido._id)
-
-            const updateCliente = await Cliente.updateOne(
-                { _id: cliente._id }, 
-                { historicoPedidos: cliente.historicoPedidos } 
-            )
-            
-            if (updateCliente === 1) {
-                //expandimos pedido para generar factura....
-                const itemsExpanded = await Libro.populate(pedido.articulos, { path: 'libroItem' })
-                pedido.articulos= itemsExpanded
-            
-                _crearFacturaPDF({pedido})
-                await _emailEnvioPdf({cliente})
-
-                res.status(200).redirect('/Tienda/Libros/0')
+            const cliente = req.session.cliente
+            const pedido = {
+                ...cliente.pedidoActual,
+                estado: 'en curso',
+                fecha: Date.now()
             }
+            cliente.historicoPedidos.push(pedido._id)
+            
+            const insertPedido = Pedido(pedido).save()
+            const updateCliente = Cliente.updateOne(
+                { _id: cliente._id },
+                { $push: { historicoPedidos: pedido._id } } 
+            )
+
+            Promise
+                .all([insertPedido, updateCliente])
+                .then(async () => {
+                    // expandimos pedido para generar factura....
+                    const itemsExpanded = await Libro.populate(pedido.articulos, { path: 'libroItem' })
+                    pedido.articulos= itemsExpanded
+                    
+                    _crearFacturaPDF({pedido})
+                    await _emailEnvioPdf({cliente})
+
+                    res.status(200).redirect(URL_HOME)
+                })
+                .catch((err) => {
+                    console.log('Error al guardar pedido y datos cliente', err)
+                    res.status(400).send()
+                })
         } catch (err) {
-            logger.error('Error al realizar al actualizar las colecciones pedido, cliente', err)
+            res.status(500).send()
         }
     }
 }
 
 function _eliminarLibroPedido({pedido, libroId}) {
-    const borrarLibro = pedido.articulos.filter(libro => libro.libroItem != libroId)
+    const pedidoActualizado = pedido.articulos.filter(libro => libro.libroItem != libroId)
     
-    pedido.articulos = borrarLibro
+    return pedidoActualizado
 }
 
 async function _renderizarMostrarPedido({pedido, req, res}) {

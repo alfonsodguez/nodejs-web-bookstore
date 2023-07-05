@@ -10,7 +10,7 @@ router.route('/Login')
       .get(clienteController.getLogin)
       .post(clienteController.postLogin) 
 
-router.get("/ActivarCuenta/:email", clienteController.getActivarCuenta)
+router.get("/ActivarCuenta", clienteController.getActivarCuenta)
 
 router.route('/CompruebaEmail')
       .get(clienteController.getComprobarEmail)
@@ -30,10 +30,9 @@ function _checkSessionCliente(req, res, next) {
       if (req.session.cliente == undefined || req.session.cliente == null || req.session.cliente == '') {
             res.status(200).redirect('http://localhost:3000/Cliente/Login')
       }
-      else { 
-            req.cliente = req.session.cliente 
-            next() 
-      }
+      
+      req.cliente = req.session.cliente 
+      next()      
 }
 
 function _cargarOpcionesPanelCliente(req, res, next) { 

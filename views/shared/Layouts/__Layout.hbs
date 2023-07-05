@@ -37,7 +37,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Buscar por libro,autor,iSBN..." aria-label="Buscar por libro,autor,iSBN..." aria-describedby="botonBuscar">
+                        <input type="text" class="form-control" placeholder="Buscar por libro,autor,iSBN10..." aria-label="Buscar por libro,autor,iSBN10..." aria-describedby="botonBuscar">
                         <div class="input-group-append">
                             <a class="btn btn-outline-primary" id="botonBuscar" href="http://localhost:3000/Tienda/BuscarLibros">
                                 <img src="/public/images/boton_BuscarLibros.png" />
@@ -63,7 +63,7 @@
                     <div class="list-group">
                         {{#each this.listaMaterias as |materia| }}
                             <a class="list-group-item list-group-item-action" href="http://localhost:3000/Tienda/Libros/{{materia.idMateria}}">
-                                {{split materia.NombreMateria ';' 0}}    
+                                {{split materia.nombre ';' 0}}    
                             </a>
                         {{/each}}
                     </div>

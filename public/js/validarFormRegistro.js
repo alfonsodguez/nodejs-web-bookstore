@@ -1,14 +1,23 @@
 const cajaEmail = document.getElementById('inputEmail')
+const cajaPassword = document.getElementById('inputPassword')
+const cajasTexto = document.getElementsByTagName('input') 
+
 cajaEmail.addEventListener('blur', validarEmail)
+cajaPassword.addEventListener('blur', validarPassword)
+Array.from(cajasTexto).forEach(caja => caja.addEventListener('blur', validarCampos))
+
 function validarEmail(ev) {
     let success = true
     if (ev.target.value === '') {
         success = false
     }
-    if ( /^.*@.*\.(com|es|uk|it|org)$/.test(ev.target.value) === false) {
+
+    const reEmail = /^.*@.*\.(com|es|uk|it|org)$/
+    if (reEmail.test(ev.target.value) === false) {
         success = false
     }
-    if (success === false) {
+
+    if (!success) {
         //borramas etiqueta span en caso de que exista 
         if(ev.target.nextElementSibling != null){
             ev.target.nextElementSibling.remove()
@@ -22,14 +31,12 @@ function validarEmail(ev) {
     else if (success) {
         //campo bien validado
         //eliminamos etiqueta span si existe
-        if(ev.target.nextElementSibling != null){
+        if (ev.target.nextElementSibling != null) {
             ev.target.nextElementSibling.remove()
         }														
     }
 }
 
-const cajaPassword = document.getElementById('inputPassword')
-cajaPassword.addEventListener('blur', validarPassword)
 function validarPassword(ev) {
     let validated = true
     
@@ -89,9 +96,6 @@ function validarPassword(ev) {
     }
 }
 
-//añadimos un listener a todos los campos
-const cajasTexto = document.getElementsByTagName('input') 
-Array.from(cajasTexto).forEach(caja => caja.addEventListener('blur', validarCampos))
 function validarCampos(ev) {
     if (ev.target.getAttribute('type') === 'text') {
         //comprobamos si tiene texto 

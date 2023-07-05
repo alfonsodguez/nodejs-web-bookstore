@@ -4,7 +4,7 @@ const router = express.Router()
 const restController = require('../controllers/rest')
 
 router.get('/getMunicipios/:codPro', restController.getMunicipios) 
-router.post('/uploadImagen',         _upload.single('imagen'), restController.uploadImagen)   // 'imagen' es el nombre de la variable a la cual pasas el fichero en la pet ajax en MiPerfil.hbs
+router.post('/uploadImagen', _upload.single('imagen'), restController.uploadImagen)   // 'imagen' es el nombre de la variable a la cual pasas el fichero en la pet ajax en MiPerfil.hbs
 
 const options = {
     destination: function (req, file, callback) { 

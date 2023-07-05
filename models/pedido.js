@@ -12,18 +12,18 @@ const pedidoSchema = new mongoose.Schema({
         libroItem:    { type: mongoose.Schema.Types.ObjectId, ref: 'Libro' },
         cantidadItem: { type: Number, required: true, default: 1 } 
     }]
-})
-module.exports = mongoose.model('Pedido', pedidoSchema, 'pedidos')
+}, { timestamps: true })
+
 
 pedidosSchema.methods.CalcularTotalPedido = async function() {
     const articulosExpandidos = await Libro.populate(this.articulos, { path: 'libroItem' })
 
-    const subtotal = 0
-    articulosExpandidos.forEach((itemPedido) => {
-        subtotal += itemPedido.cantidadItem * itemPedido.libroItem.precio
-    })
-
+    const subtotal = articulosExpandidos.reduce((acc, itemPedido, index) => {
+        return acc += itemPedido.cantidadItem * itemPedido.libroItem.precio
+    }, 0)   
+    
     this.subtotal = Math.round(subtotal * 100)/100
     this.total = Math.round((subtotal + this.gastosEnvio) * 100)/100
 }
 
+module.exports = mongoose.model('Pedido', pedidoSchema, 'pedidos')

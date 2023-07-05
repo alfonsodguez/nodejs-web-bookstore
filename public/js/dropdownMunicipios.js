@@ -9,11 +9,12 @@ $('#inputProvincia').change(function(evt) {
         $('#inputLocalidad').prop("disabled", false)
 
         const url = 'http://localhost:3000/api/getMunicipios/' + $(this).val()
+
         fetch(url, { method: 'get' }) 
             .then(bodyMunicipios => bodyMunicipios.json()) 
             .then(municipios => municipios.forEach(municipio => { 
                 //construimos tags option
-                $('#inputLocalidad').append(`<option value=${municipio.codMun}>${municipio.nombreMunicipio}</option>`)
+                $('#inputLocalidad').append(`<option value=${municipio.codMunicipio}>${municipio.nombre}</option>`)
             })) 
             .catch(error => console.log('error munis', error))
     }           
