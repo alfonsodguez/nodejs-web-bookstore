@@ -1,7 +1,7 @@
 const fs = require('fs')
 const pdfDocument = require('pdfkit-table')
 const Libro = require('../models/libro')
-const Pedido = require('../models/pedidos')
+const Pedido = require('../models/pedido')
 const Cliente = require('../models/cliente')
 const emailSevice = require('../models/email-service')
 

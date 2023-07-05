@@ -1,5 +1,5 @@
 const Bluebird = require('bluebird')
-const Materia = require('../models/materias')
+const Materia = require('../models/materia')
 const Libro = require('../models/libro')
 
 const RENDER_PATH = {

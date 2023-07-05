@@ -15,7 +15,7 @@ const pedidoSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 
-pedidosSchema.methods.CalcularTotalPedido = async function() {
+pedidoSchema.methods.CalcularTotalPedido = async function() {
     const articulosExpandidos = await Libro.populate(this.articulos, { path: 'libroItem' })
 
     const subtotal = articulosExpandidos.reduce((acc, itemPedido, index) => {

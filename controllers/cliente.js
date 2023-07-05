@@ -12,7 +12,7 @@ const Libro = require('../models/libro')
 const URL = {
     LOGIN:   "http://localhost:3000/Cliente/Login",
     TIENDA:  "http://localhost:3000/Tienda/Libros/0",
-    ACTIVAR: `http://localhost:3000/Cliente/ActivarCuenta/${email}`
+    ACTIVAR: 'http://localhost:3000/Cliente/ActivarCuenta/'
 }
 const RENDER_PATH = {
     REGISTRO:    'Cliente/Registro.hbs',
@@ -271,7 +271,7 @@ async function _emailConfirmacionRegistro({email, nombre}) {
              }],
             "Subject": "Bienvenido al portal Agapea.com",
             "TextPart": "Se ha registrado correctamente, active su cuenta para poder comenzar a comprar.",
-            "HTMLPart": "<h3><strong>Se ha registrado correctamente en Agapea.com</strong></h3>" + `<br>Pulsa <a href="${URL.ACTIVAR}">aqui </a>para activar su cuenta`
+            "HTMLPart": "<h3><strong>Se ha registrado correctamente en Agapea.com</strong></h3>" + `<br>Pulsa <a href="${URL.ACTIVAR}${email}">aqui </a>para activar su cuenta`
         }] 
     }
 
