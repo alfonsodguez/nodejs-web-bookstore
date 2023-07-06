@@ -1,11 +1,8 @@
 const Bluebird = require('bluebird')
 const Materia = require('../models/materia')
 const Libro = require('../models/libro')
+const {RENDER_PATH} = require('../models/enums')
 
-const RENDER_PATH = {
-    LIBROS: 'Tienda/Libros.hbs',
-    DETALLES_LIBRO: 'Tienda/MostrarLibros.hbs'
-}
 const DEFAULT_ID_MATERIA = 0
 
 module.exports = {

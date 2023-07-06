@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()  
 const clienteController = require('../controllers/cliente')
+const {URL} = require('../models/enums')
 
 router.route('/Registro')
       .get(clienteController.getRegistro)
@@ -28,7 +29,7 @@ router.route('/Panel/MiPerfil')
 
 function _checkSessionCliente(req, res, next) {  
       if (req.session.cliente == undefined || req.session.cliente == null || req.session.cliente == '') {
-            res.status(200).redirect('http://localhost:3000/Cliente/Login')
+            res.status(200).redirect(URL.LOGIN)
       }
       
       req.cliente = req.session.cliente 

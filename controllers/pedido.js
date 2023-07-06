@@ -4,8 +4,7 @@ const Libro = require('../models/libro')
 const Pedido = require('../models/pedido')
 const Cliente = require('../models/cliente')
 const emailSevice = require('../models/email-service')
-
-const URL_HOME = '/Tienda/Libros/0'
+const {URL} = require('../models/enums')
 
 module.exports = {
     addLibroPedido: async (req, res) => {
@@ -71,7 +70,7 @@ module.exports = {
         //actualizar session 
         req.session.cliente.pedidoActual = pedido
 
-        res.status(200).redirect(URL_HOME)      
+        res.status(200).redirect(URL.TIENDA)      
     },
     finalizarPedido: async (req, res) => {
         try {
@@ -99,7 +98,7 @@ module.exports = {
                     _crearFacturaPDF({pedido})
                     await _emailEnvioPdf({cliente})
 
-                    res.status(200).redirect(URL_HOME)
+                    res.status(200).redirect(URL.TIENDA)
                 })
                 .catch((err) => {
                     console.log('Error al guardar pedido y datos cliente', err)
