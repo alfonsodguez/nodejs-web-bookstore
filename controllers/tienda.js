@@ -11,13 +11,15 @@ module.exports = {
             const cliente = req.session.cliente
             const idMateria = req.params.idmateria
 
+            console.log(idMateria )
+            
             const [libros, listaMaterias] = await Bluebird.all([
                 Libro.find({ idMateria }).lean(),
                 _devolverMaterias()
             ])
-                        
+
             const tuplasDeTresLibros = []
-            for (const pos=0; pos<libros.length; pos=pos+3) {
+            for (let pos=0; pos<libros.length; pos=pos+3) {
 
                 const tresLibros = libros.slice(pos, pos + 3)
                 

@@ -7,7 +7,7 @@ const libroSchema = new mongoose.Schema({
     autor:  { type: String, required: true },
     precio: { type: Number, required: true },
     editorial: { type: String, required: true },
-    idMateria: { type: String, require: true },
+    idMateria: { type: Number, require: true },
     paginas:   { type: String, required: true },
     ficheroImagen: { type: String, required: true },
     descripcion:   { type: String, required: false },
