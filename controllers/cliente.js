@@ -97,10 +97,10 @@ module.exports = {
                     { new: true } 
                 )
 
-                res.redirect(URL.LOGIN)
+                res.status(200).redirect(URL.LOGIN)
+            } else {
+                res.status(400).render(RENDER_PATH.REGISTRO_OK, { layout: null, mensajeError: ERROR_MESSAGE.ACTIVAR })
             }
-            
-            res.status(400).render(RENDER_PATH.REGISTRO_OK, { layout: null, mensajeError: ERROR_MESSAGE.ACTIVAR })
         } catch (err) {
             res.status(500).render(RENDER_PATH.REGISTRO_OK, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
         }
@@ -146,7 +146,7 @@ module.exports = {
                     //creamos prop. cliente en la session y añadimos datos cliente
                     req.session.cliente = cliente   
 
-                    res.redirect(URL.TIENDA)    
+                    res.status(200).redirect(URL.TIENDA)    
                 } else {
                     view = RENDER_PATH.REGISTRO_OK
                     mensajeError = ERROR_MESSAGE.ACTIVAR
@@ -171,10 +171,10 @@ module.exports = {
 
             if (credenciales) {
                 // TODO: envio correo para poder cambiar la password
-                res.redirect(URL.LOGIN)
-            }     
-
-            res.status(400).render(RENDER_PATH.CHECK_EMAIL, { layout: null, mensajeError: ERROR_MESSAGE.CHECK_EMAIL })
+                res.status(200).redirect(URL.LOGIN)
+            } else {
+                res.status(400).render(RENDER_PATH.CHECK_EMAIL, { layout: null, mensajeError: ERROR_MESSAGE.CHECK_EMAIL })
+            }
         } catch (err) {
             res.status(500).render(RENDER_PATH.LOGIN, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
         }
@@ -217,25 +217,20 @@ module.exports = {
         const email = cliente.credenciales.email
         const login = cliente.credenciales.login
 
-        try {
-            const updateCliente      = Cliente.updateOne({ _id: clienteId }, cliente)
-            const updateCredenciales = Credenciales.updateOne({ _id: credencialesId }, { login, email })         
-                                
-            Promise
-                .all([ updateCliente, updateCredenciales ]) 
-                .then(() => { 
-                    //actualizamos session
-                    req.session.cliente = cliente
-                    
-                    res.status(200).render(RENDER_PATH.PANEL, { cliente, opcionesPanel })
-                })
-                .catch((err) => {
-                    res.status(400).render(RENDER_PATH.PERFIL, { cliente, opcionesPanel, mensajeError: ERROR_MESSAGE.PERFIL })
-                })
-
-        } catch (err) {
-            res.status(500).render(RENDER_PATH.PERFIL, { cliente, opcionesPanel, mensajeError: ERROR_MESSAGE.SERVER })
-        }
+        const updateCliente      = Cliente.updateOne({ _id: clienteId }, cliente)
+        const updateCredenciales = Credenciales.updateOne({ _id: credencialesId }, { login, email })         
+                            
+        Promise
+            .all([ updateCliente, updateCredenciales ]) 
+            .then(() => { 
+                //actualizamos session
+                req.session.cliente = cliente
+                
+                res.status(200).render(RENDER_PATH.PANEL, { cliente, opcionesPanel })
+            })
+            .catch((err) => {
+                res.status(400).render(RENDER_PATH.PERFIL, { cliente, opcionesPanel, mensajeError: ERROR_MESSAGE.PERFIL })
+            })
     }
 } 
 

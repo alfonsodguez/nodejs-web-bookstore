@@ -4,22 +4,27 @@ const Libro = require('../models/libro')
 const Pedido = require('../models/pedido')
 const Cliente = require('../models/cliente')
 const emailSevice = require('../models/email-service')
-const {URL} = require('../models/enums')
+const {URL, RENDER_PATH, ERROR_MESSAGE} = require('../models/enums')
 
 module.exports = {
-    addLibroPedido: async (req, res) => {
-        try {           
-            const libroId = req.params.id
+    addLibroPedido: async (req, res) => {        
+        try {
             //recuperar session y añadir libro expandido al pedido
+            const libroId = req.params.id
+            const session = req.session 
+            if (session) {
+                throw new Error(ERROR_MESSAGE.SESSION)
+            }
+
             const pedido = new Pedido(req.session.cliente.pedidoActual)
             const libro = pedido.articulos.find((libro) => libro.libroItem === libroId)
-
+    
             if (libro) {
                 libro.cantidadItem += 1
+            } else {
+                pedido.articulos.push({ libroItem: libroId, cantidadItem: 1 })
             }
             
-            pedido.articulos.push({ libroItem: libroId, cantidadItem: 1 })
-
             await _renderizarMostrarPedido({pedido, req, res})
         } catch (err) {
             res.status(500).send()
@@ -48,9 +53,9 @@ module.exports = {
 
             if (cantidad > 1) {
                 pedido.articulos[indexLibro].cantidadItem -= 1
+            } else {
+                pedido.articulos = _eliminarLibroPedido({pedido, libroId})
             }
-            
-            pedido.articulos = _eliminarLibroPedido({pedido, libroId})
         }
         await _renderizarMostrarPedido(pedido,req, res)
     },
@@ -62,51 +67,47 @@ module.exports = {
             
         if (pedido.articulos.length > 0) {
             await _renderizarMostrarPedido(pedido, req, res)            
+        } else {
+            //actualizar datos pedido
+            pedido.CalcularTotalPedido()
+    
+            //actualizar session 
+            req.session.cliente.pedidoActual = pedido
+    
+            res.status(200).redirect(URL.TIENDA)      
         }
-
-        //actualizar datos pedido
-        pedido.CalcularTotalPedido()
-
-        //actualizar session 
-        req.session.cliente.pedidoActual = pedido
-
-        res.status(200).redirect(URL.TIENDA)      
     },
     finalizarPedido: async (req, res) => {
-        try {
-            const cliente = req.session.cliente
-            const pedido = {
-                ...cliente.pedidoActual,
-                estado: 'en curso',
-                fecha: Date.now()
-            }
-            cliente.historicoPedidos.push(pedido._id)
-            
-            const insertPedido = Pedido(pedido).save()
-            const updateCliente = Cliente.updateOne(
-                { _id: cliente._id },
-                { $push: { historicoPedidos: pedido._id } } 
-            )
-
-            Promise
-                .all([insertPedido, updateCliente])
-                .then(async () => {
-                    // expandimos pedido para generar factura....
-                    const itemsExpanded = await Libro.populate(pedido.articulos, { path: 'libroItem' })
-                    pedido.articulos= itemsExpanded
-                    
-                    _crearFacturaPDF({pedido})
-                    await _emailEnvioPdf({cliente})
-
-                    res.status(200).redirect(URL.TIENDA)
-                })
-                .catch((err) => {
-                    console.log('Error al guardar pedido y datos cliente', err)
-                    res.status(400).send()
-                })
-        } catch (err) {
-            res.status(500).send()
+        const cliente = req.session.cliente
+        const pedido = {
+            ...cliente.pedidoActual,
+            estado: 'en curso',
+            fecha: Date.now()
         }
+        cliente.historicoPedidos.push(pedido._id)
+        
+        const insertPedido = Pedido(pedido).save()
+        const updateCliente = Cliente.updateOne(
+            { _id: cliente._id },
+            { $push: { historicoPedidos: pedido._id } } 
+        )
+
+        Promise
+            .all([ insertPedido, updateCliente ])
+            .then(async () => {
+                // expandimos pedido para generar factura....
+                const itemsExpandidos = await Libro.populate(pedido.articulos, { path: 'libroItem' })
+                pedido.articulos= itemsExpandidos
+                
+                _crearFacturaPDF({pedido})
+                await _emailEnvioPdf({cliente})
+
+                res.status(200).redirect(URL.TIENDA)
+            })
+            .catch((err) => {
+                console.log('Error al guardar pedido y datos cliente', err)
+                res.status(400).send()
+            })
     }
 }
 
@@ -117,13 +118,17 @@ function _eliminarLibroPedido({pedido, libroId}) {
 }
 
 async function _renderizarMostrarPedido({pedido, req, res}) {
-    await pedido.CalcularTotalPedido()
-    pedido.articulos = await Libro.populate(pedido.articulos, { path: 'libroItem' })
-
-    //actualizamos session 
-    req.session.cliente.pedidoActual = pedido           
-
-    res.status(200).render('Pedido/MostrarPedido.hbs', { layout: null, pedido: pedido.toObject() }) 
+    try {
+        await pedido.CalcularTotalPedido()
+        pedido.articulos = await Libro.populate(pedido.articulos, { path: 'libroItem' })
+    
+        //actualizamos session 
+        req.session.cliente.pedidoActual = pedido           
+    
+        res.status(200).render(RENDER_PATH.DETALLES_PEDIDO, { layout: null, pedido: pedido.toObject() }) 
+    } catch (err) {
+        res.status(500).send()
+    }
 }
 
 function _crearFacturaPDF({pedido}) {
@@ -206,7 +211,7 @@ async function _emailEnvioPdf({cliente}) {
     try {
         await emailSevice.sendEmail({mensaje: cuerpoEmail})
     } catch (err) {
-        logger.error('Error en envio del pdf al email ', err)
+        console.log('Error en envio del pdf al email ', err)
     }
 }
 
