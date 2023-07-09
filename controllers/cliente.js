@@ -8,7 +8,7 @@ const Provincia = require('../models/provincia')
 const Municipio = require('../models/municipio')
 const Pedido = require('../models/pedido')
 const Libro = require('../models/libro')
-const {RENDER_PATH, URL, ERROR_MESSAGE} = require('../models/enums')
+const {URL, RENDER_PATH, ERROR_MESSAGE} = require('../models/enums')
 
 const GASTOS_ENVIO = 3
 
@@ -70,7 +70,7 @@ module.exports = {
             Promise
                 .all([ insertCliente, insertCredenciales, insertDirecciones ])  
                 .then(async () => { 
-                    await _emailConfirmacionRegistro({ email, nombre })
+                    await _emailActivacionCuenta({ email, nombre })
     
                     res.status(200).render(RENDER_PATH.REGISTRO_OK, { layout: null }) 
                 }) 
@@ -100,9 +100,9 @@ module.exports = {
                 res.redirect(URL.LOGIN)
             }
             
-            res.status(400).render(RENDER_PATH.LOGIN, { layout: null, mensajeError: ERROR_MESSAGE.ACTIVAR })
+            res.status(400).render(RENDER_PATH.REGISTRO_OK, { layout: null, mensajeError: ERROR_MESSAGE.ACTIVAR })
         } catch (err) {
-            res.status(500).render(RENDER_PATH.LOGIN, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
+            res.status(500).render(RENDER_PATH.REGISTRO_OK, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
         }
     },
     getLogin: (req, res) => {
@@ -112,9 +112,10 @@ module.exports = {
         const { password, email } = req.body
         
         try {
+            let view, mensajeError
             const credenciales = await _findCredenciales({ email })
             const isValidPassword = await bcrypt.compare(password, credenciales.hash)
-
+            
             if (isValidPassword) {
                 const cliente = await Cliente
                     .findOne({ credenciales: credenciales._id }) 
@@ -126,26 +127,36 @@ module.exports = {
                         ]},
                         { path: 'historicoPedidos', model: Pedido, populate: { path: 'articulos.libroItem', model: Libro } }
                     ])
-                    .lean()                                                                                 
+                    .lean()   
 
-                const newPedido = new Pedido({
-                    gastosEnvio: GASTOS_ENVIO,
-                    subtotal: 0,
-                    total: 0,
-                    estado: 'pendiente',
-                    cliente: cliente._id,
-                    articulos: [] 
-                })
+                const cuentaActiva = cliente.cuentaActiva
 
-                cliente.pedidoActual = newPedido    
+                if (cuentaActiva) {
+                    const newPedido = new Pedido({
+                        gastosEnvio: GASTOS_ENVIO,
+                        subtotal: 0,
+                        total: 0,
+                        estado: 'pendiente',
+                        cliente: cliente._id,
+                        articulos: [] 
+                    })
 
-                //creamos prop. cliente en la session y añadimos datos cliente
-                req.session.cliente = cliente   
+                    cliente.pedidoActual = newPedido    
 
-                res.redirect(URL.TIENDA)
+                    //creamos prop. cliente en la session y añadimos datos cliente
+                    req.session.cliente = cliente   
+
+                    res.redirect(URL.TIENDA)    
+                } else {
+                    view = RENDER_PATH.REGISTRO_OK
+                    mensajeError = ERROR_MESSAGE.ACTIVAR
+                }
+            } else {
+                view = RENDER_PATH.LOGIN
+                mensajeError = ERROR_MESSAGE.LOGIN
             }
 
-            res.status(400).render(RENDER_PATH.LOGIN, { layout: null, mensajeErrorCustom: ERROR_MESSAGE.LOGIN })
+            res.status(400).render(view, { layout: null, mensajeError })
         } catch (err) {
             res.status(500).render(RENDER_PATH.LOGIN, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
         }   
@@ -233,10 +244,10 @@ async function _findProvincias() {
 }
 
 async function _findCredenciales({email}) {
-    return Credenciales.findOne({ email }).select('_id').lean()
+    return Credenciales.findOne({ email }).lean()
 }
 
-async function _emailConfirmacionRegistro({email, nombre}) {
+async function _emailActivacionCuenta({email, nombre}) {
     const cuerpoEmail = { 
         "Messages": [{
             "From": {

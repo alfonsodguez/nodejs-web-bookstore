@@ -6,3 +6,5 @@ async function sendEmail({mensaje}) {
         .post("send", {'version': 'v3.1'})
         .request(mensaje)
 }
+
+module.exports = {sendEmail}

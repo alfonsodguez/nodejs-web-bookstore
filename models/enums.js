@@ -22,8 +22,10 @@ const ERROR_MESSAGE= {
     ACTIVAR:     'Error al activar la cuenta',
     REGISTRO:    'Error en el registro',
     PROVINCIAS:  'Error al recuperar las provincias',
+    MUNICIPIOS:  'Error al recuperar los municipios',
     CHECK_EMAIL: 'Error al validar el email',
     PERFIL:      'Error al actualizar los datos personales',
+    LIBRO:       'Error al recuperar libros o materias'
 }
 
 module.exports = {
