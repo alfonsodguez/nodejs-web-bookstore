@@ -29,11 +29,11 @@ router.route('/Panel/MiPerfil')
 
 function _checkSessionCliente(req, res, next) {  
       if (req.session.cliente == undefined || req.session.cliente == null || req.session.cliente == '') {
-            res.status(200).redirect(URL.LOGIN)
+            res.redirect(URL.LOGIN)
+      } else {
+            req.cliente = req.session.cliente 
+            next()      
       }
-      
-      req.cliente = req.session.cliente 
-      next()      
 }
 
 function _cargarOpcionesPanelCliente(req, res, next) { 

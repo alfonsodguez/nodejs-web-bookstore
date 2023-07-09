@@ -5,7 +5,7 @@ const {URL} = require('../models/enums')
 router.get("/", getHome)
 
 function getHome(req, res) {
-    res.status(200).redirect(URL.TIENDA)
+    res.redirect(URL.TIENDA)
 }
 
 module.exports = router

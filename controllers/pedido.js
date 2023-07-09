@@ -12,47 +12,46 @@ module.exports = {
             //recuperar session y añadir libro expandido al pedido
             const libroId = req.params.id
             const session = req.session 
-            if (session) {
+
+            if (!session) {
                 throw new Error(ERROR_MESSAGE.SESSION)
             }
 
-            const pedido = new Pedido(req.session.cliente.pedidoActual)
-            const libro = pedido.articulos.find((libro) => libro.libroItem === libroId)
+            const pedido = new Pedido(session.cliente.pedidoActual)
+            const libro = pedido.articulos.find((libro) => String(libro.libroItem._id) === String(libroId))
     
             if (libro) {
                 libro.cantidadItem += 1
             } else {
                 pedido.articulos.push({ libroItem: libroId, cantidadItem: 1 })
             }
-            
+
             await _renderizarMostrarPedido({pedido, req, res})
         } catch (err) {
-            res.status(500).send()
+            res.redirect(URL.LOGIN)
         }
     },
     sumarCantidadPedido: async (req, res) => {
         const libroId = req.params.id
-        const pedido = req.session.cliente.pedidoActual
+        const pedido = new Pedido(req.session.cliente.pedidoActual)
+        const pos = pedido.articulos.findIndex(libro => String(libro.libroItem._id) === String(libroId))
 
-        pedido.articulos.forEach(libro => {
-            if (libro.libroItem === libroId ) {
-                libro.cantidadItem += 1 
-            }
-        })
+        if (pos != -1) {
+            pedido.articulos[pos].cantidadItem += 1
+        }
 
         await _renderizarMostrarPedido({pedido, req, res})
     },
     restarCantidadPedido: async (req, res) => {
         const libroId = req.params.id
-        const pedido = req.session.cliente.pedidoActual
+        const pedido = new Pedido(req.session.cliente.pedidoActual)
+        const pos = pedido.articulos.findIndex(libro => String(libro.libroItem._id) === String(libroId))
 
-        const indexLibro = pedido.articulos.findIndex(libro => libro.libroItem === libroId)
-
-        if (indexLibro != -1) {
-            const cantidad = pedido.articulos[indexLibro].cantidadItem
+        if (pos != -1) {
+            const cantidad = pedido.articulos[pos].cantidadItem
 
             if (cantidad > 1) {
-                pedido.articulos[indexLibro].cantidadItem -= 1
+                pedido.articulos[pos].cantidadItem -= 1
             } else {
                 pedido.articulos = _eliminarLibroPedido({pedido, libroId})
             }
@@ -61,7 +60,7 @@ module.exports = {
     },
     eliminarLibroPedido: async (req, res) => {
         const libroId = req.params.id
-        const pedido = req.session.cliente.pedidoActual
+        const pedido = new Pedido(req.session.cliente.pedidoActual)
 
         pedido.articulos = _eliminarLibroPedido({pedido, libroId})
             
@@ -74,7 +73,7 @@ module.exports = {
             //actualizar session 
             req.session.cliente.pedidoActual = pedido
     
-            res.status(200).redirect(URL.TIENDA)      
+            res.redirect(URL.TIENDA)      
         }
     },
     finalizarPedido: async (req, res) => {
@@ -112,7 +111,7 @@ module.exports = {
 }
 
 function _eliminarLibroPedido({pedido, libroId}) {
-    const pedidoActualizado = pedido.articulos.filter(libro => libro.libroItem != libroId)
+    const pedidoActualizado = pedido.articulos.filter(libro => String(libro.libroItem._id) != String(libroId))
     
     return pedidoActualizado
 }
@@ -123,7 +122,7 @@ async function _renderizarMostrarPedido({pedido, req, res}) {
         pedido.articulos = await Libro.populate(pedido.articulos, { path: 'libroItem' })
     
         //actualizamos session 
-        req.session.cliente.pedidoActual = pedido           
+        req.session.cliente.pedidoActual = pedido      
     
         res.status(200).render(RENDER_PATH.DETALLES_PEDIDO, { layout: null, pedido: pedido.toObject() }) 
     } catch (err) {

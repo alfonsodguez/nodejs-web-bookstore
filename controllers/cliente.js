@@ -97,7 +97,7 @@ module.exports = {
                     { new: true } 
                 )
 
-                res.status(200).redirect(URL.LOGIN)
+                res.redirect(URL.LOGIN)
             } else {
                 res.status(400).render(RENDER_PATH.REGISTRO_OK, { layout: null, mensajeError: ERROR_MESSAGE.ACTIVAR })
             }
@@ -146,7 +146,7 @@ module.exports = {
                     //creamos prop. cliente en la session y añadimos datos cliente
                     req.session.cliente = cliente   
 
-                    res.status(200).redirect(URL.TIENDA)    
+                    res.redirect(URL.TIENDA)    
                 } else {
                     view = RENDER_PATH.REGISTRO_OK
                     mensajeError = ERROR_MESSAGE.ACTIVAR
@@ -171,7 +171,7 @@ module.exports = {
 
             if (credenciales) {
                 // TODO: envio correo para poder cambiar la password
-                res.status(200).redirect(URL.LOGIN)
+                res.redirect(URL.LOGIN)
             } else {
                 res.status(400).render(RENDER_PATH.CHECK_EMAIL, { layout: null, mensajeError: ERROR_MESSAGE.CHECK_EMAIL })
             }
