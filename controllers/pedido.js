@@ -56,7 +56,7 @@ module.exports = {
                 pedido.articulos = _eliminarLibroPedido({pedido, libroId})
             }
         }
-        await _renderizarMostrarPedido(pedido,req, res)
+        await _renderizarMostrarPedido({pedido,req, res})
     },
     eliminarLibroPedido: async (req, res) => {
         const libroId = req.params.id
@@ -65,7 +65,7 @@ module.exports = {
         pedido.articulos = _eliminarLibroPedido({pedido, libroId})
             
         if (pedido.articulos.length > 0) {
-            await _renderizarMostrarPedido(pedido, req, res)            
+            await _renderizarMostrarPedido({pedido, req, res})            
         } else {
             //actualizar datos pedido
             pedido.CalcularTotalPedido()
@@ -111,9 +111,9 @@ module.exports = {
 }
 
 function _eliminarLibroPedido({pedido, libroId}) {
-    const pedidoActualizado = pedido.articulos.filter(libro => String(libro.libroItem._id) != String(libroId))
+    const articulosActualizado = pedido.articulos.filter(libro => String(libro.libroItem._id) != String(libroId))
     
-    return pedidoActualizado
+    return articulosActualizado
 }
 
 async function _renderizarMostrarPedido({pedido, req, res}) {
@@ -135,12 +135,12 @@ function _crearFacturaPDF({pedido}) {
     const pdfPath   = __dirname + '/../pdf/factura-' + pedido._id.toString() + '.pdf'
     const imagePath = __dirname + '/../public/images/cabecera.png'
     const cabecera  = 'RESUMEN DE LA CESTA'
-    const separador = '________________________'
+    const separador = '_'
     
     factura.pipe(fs.createWriteStream(pdfPath))
     factura.image(imagePath, { align: 'center' })
     factura.fontSize(20).text(cabecera)
-    factura.fontSize(20).text(separador)
+    factura.fontSize(20).text(separador.repeat(cabecera.length))
     
     const filas = pedido.articulos.map(itemPedido => {
         return [
@@ -156,11 +156,11 @@ function _crearFacturaPDF({pedido}) {
         rows: filas
     }
 
-    factura.table(tablaItemsPedido, { width: 300 })
-    factura.fontSize(20).text(separador)
-    factura.fontSize(20).text('Subtotal Pedido: ' + pedido.subtotal + ' €')
-    factura.fontSize(18).text('Gastos de Envio: ' + pedido.GastosDeEnvio + ' €')
-    factura.fontSize(20).text('TOTAL PEDIDO: ' + pedido.totalPedido + ' €')
+    factura.table(tablaItemsPedido, { width: 500 })
+    factura.fontSize(10).text(separador.repeat(30))
+    factura.fontSize(10).text('Subtotal Pedido: ' + pedido.subtotal + ' €')
+    factura.fontSize(10).text('Gastos de Envio: ' + pedido.gastosEnvio + ' €')
+    factura.fontSize(10).text('TOTAL PEDIDO: ' + pedido.total + ' €')
     factura.end()
 }
 
@@ -194,9 +194,9 @@ async function _emailEnvioPdf({cliente}) {
                 </div>
                 <hr/>
                 <div>
-                    <p><strong>Direccion de envio: ${direccionPpal}</strong></p>
-                    <p> Calle: .... , CP: ... </p>
-                    <p> Localidad: ...  Provincia: .... </p>
+                    <p><strong>Direccion de envio: </strong></p>
+                    <p> Calle: ${direccionPpal.calle}, CP: ${direccionPpal.cp} </p>
+                    <p> Localidad: ${direccionPpal.municipio.nombre}  Provincia: ${direccionPpal.provincia.nombre} </p>
                 </div>
             `,
             "Attachments": [{
