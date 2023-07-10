@@ -101,7 +101,7 @@ module.exports = {
                 _crearFacturaPDF({pedido})
                 await _emailEnvioPdf({cliente})
 
-                res.status(200).redirect(URL.TIENDA)
+                res.status(200).render(RENDER_PATH.FINALIZAR, {layout: null})
             })
             .catch((err) => {
                 console.log('Error al guardar pedido y datos cliente', err)

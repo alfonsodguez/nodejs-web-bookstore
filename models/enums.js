@@ -5,16 +5,17 @@ const URL = {
 }
 
 const RENDER_PATH = {
-    REGISTRO:        'Cliente/Registro.hbs',
-    REGISTRO_OK:     'Cliente/RegistroOK.hbs',
-    LOGIN:           'Cliente/Login.hbs',
-    CHECK_EMAIL:     'Cliente/CompruebaEmail.hbs',
-    PASSWORD:        'Cliente/Password.hbs',
-    PANEL:           'Cliente/PanelInicio.hbs',
-    PERFIL:          'Cliente/MiPerfil.hbs',
-    LIBROS:          'Tienda/Libros.hbs',
-    DETALLES_LIBRO:  'Tienda/MostrarLibros.hbs',
-    DETALLES_PEDIDO: 'Pedido/MostrarPedido.hbs'
+    REGISTRO:         'Cliente/Registro.hbs',
+    REGISTRO_OK:      'Cliente/RegistroOK.hbs',
+    LOGIN:            'Cliente/Login.hbs',
+    CHECK_EMAIL:      'Cliente/CompruebaEmail.hbs',
+    PASSWORD:         'Cliente/Password.hbs',
+    PANEL:            'Cliente/PanelInicio.hbs',
+    PERFIL:           'Cliente/MiPerfil.hbs',
+    LIBROS:           'Tienda/Libros.hbs',
+    DETALLES_LIBRO:   'Tienda/MostrarLibros.hbs',
+    DETALLES_PEDIDO:  'Pedido/MostrarPedido.hbs',
+    FINALIZAR_PEDIDO: 'Pedido/FinalizarPedido.hbs'
 }
 
 const ERROR_MESSAGE= {
