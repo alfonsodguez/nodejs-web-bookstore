@@ -93,15 +93,11 @@ module.exports = {
 
         Promise
             .all([ insertPedido, updateCliente ])
-            .then(async () => {
-                // expandimos pedido para generar factura....
-                const itemsExpandidos = await Libro.populate(pedido.articulos, { path: 'libroItem' })
-                pedido.articulos= itemsExpandidos
-                
+            .then(async () => {                
                 _crearFacturaPDF({pedido})
                 await _emailEnvioPdf({cliente})
 
-                res.status(200).render(RENDER_PATH.FINALIZAR, {layout: null})
+                res.status(200).render(RENDER_PATH.FINALIZAR_PEDIDO)
             })
             .catch((err) => {
                 console.log('Error al guardar pedido y datos cliente', err)
