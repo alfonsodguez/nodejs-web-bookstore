@@ -161,29 +161,59 @@ module.exports = {
             res.status(500).render(RENDER_PATH.LOGIN, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
         }   
     },
-    getComprobarEmail: (req, res) => {
-        res.status(200).render(RENDER_PATH.CHECK_EMAIL, { layout: null })
+    getForgotPassword: (req, res) => {
+        res.status(200).render(RENDER_PATH.FORGOT_PASSWORD, { layout: null })
     },
-    postComprobarEmail: async (req, res) => {
+    postForgotPassword: async (req, res) => {
         try {
             const email = req.body.email
             const credenciales = await _findCredenciales({ email })
-
+        
             if (credenciales) {
-                // TODO: envio correo para poder cambiar la password
+                const username = credenciales.username
+                const credsId = credenciales._id
+                const sessionId = req.session.id
+
+                _emailCambioPassword({ email, name: username, credsId, sessionId })
                 res.redirect(URL.LOGIN)
             } else {
-                res.status(400).render(RENDER_PATH.CHECK_EMAIL, { layout: null, mensajeError: ERROR_MESSAGE.CHECK_EMAIL })
+                res.status(400).render(RENDER_PATH.FORGOT_PASSWORD, { layout: null, mensajeError: ERROR_MESSAGE.CHECK_EMAIL })
             }
         } catch (err) {
             res.status(500).render(RENDER_PATH.LOGIN, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
         }
     },
-    getCambioPassword: (req, res) => {
-        res.status(200).render(RENDER_PATH.PASSWORD, { layout: null })
+    getCambioPassword: async (req, res) => {
+        const sessionId      = req.query.id
+        const credencialesId = req.query.credsid
+        const id             = req.session.id
+
+        if (sessionId === id) {
+                req.session.credsId = credencialesId
+
+                res.status(200).render(RENDER_PATH.PASSWORD, { layout: null })
+        } else {
+            res.status(500).send()
+        }
     },
     postCambioPassword: async (req, res) => {
-        // TODO
+        const password       = req.body.password
+        const credencialesId = req.session.credsId 
+
+        try {
+            const saltRounds = 10
+            const salt = await bcrypt.genSalt(saltRounds)
+            const hash = await bcrypt.hash(password, salt)
+
+            await Credenciales.updateOne(
+                { _id: credencialesId },
+                { $set: { hash: hash } }
+            )
+
+            res.redirect(URL.LOGIN)
+        } catch (err) {
+            res.status(500).send()
+        }
     },
     getPanelInicio: (req, res) => {
         const cliente = req.cliente
@@ -255,7 +285,31 @@ async function _emailActivacionCuenta({email, nombre}) {
              }],
             "Subject": "Bienvenido al portal Agapea.com",
             "TextPart": "Se ha registrado correctamente, active su cuenta para poder comenzar a comprar.",
-            "HTMLPart": "<h3><strong>Se ha registrado correctamente en Agapea.com</strong></h3>" + `<br>Pulsa <a href="${URL.ACTIVAR}${email}">aqui </a>para activar su cuenta`
+            "HTMLPart": "<h3><strong>Se ha registrado correctamente en Agapea.com</strong></h3>" + `<br>Pulsa <a href="${URL.ACTIVAR_CUENTA}${email}">aqui </a>para activar su cuenta`        
+           }] 
+    }
+
+    try {
+        await emailSevice.sendEmail({mensaje: cuerpoEmail})
+    } catch (err) {
+        console.log('Fallo al enviar email de confirmación de registro', err)
+    }
+}
+
+async function _emailCambioPassword({email, nombre, credsId, sessionId}) {
+    const cuerpoEmail = { 
+        "Messages": [{
+            "From": {
+                "Email": "admin.agapea@gmail.com",
+                "Name": "Agapea.com"
+            },
+            "To": [{
+                "Email": email,
+                "Name": nombre
+             }],
+            "Subject": "Bienvenido al portal Agapea.com",
+            "TextPart": "Accede al enlace para poder cambiar su contraseña.",
+            "HTMLPart": "<h3><strong>Accede al enlace para poder cambiar su contraseña.</strong></h3>" + `<br>Pulsa <a href="${URL.CAMBIO_PASSWORD}${sessionId}&credsid=${credsId}">aqui </a>`
         }] 
     }
 

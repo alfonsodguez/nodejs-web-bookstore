@@ -1,14 +1,15 @@
 const URL = {
-    LOGIN:   "http://localhost:3000/Cliente/Login",
-    TIENDA:  "http://localhost:3000/Tienda/Libros/0",
-    ACTIVAR: 'http://localhost:3000/Cliente/ActivarCuenta/',
+    LOGIN:           "http://localhost:3000/Cliente/Login",
+    TIENDA:          "http://localhost:3000/Tienda/Libros/0",
+    ACTIVAR_CUENTA:  'http://localhost:3000/Cliente/ActivarCuenta/',
+    CAMBIO_PASSWORD: 'http://localhost:3000/Cliente/CambioPassword?id='
 }
 
 const RENDER_PATH = {
     REGISTRO:         'Cliente/Registro.hbs',
     REGISTRO_OK:      'Cliente/RegistroOK.hbs',
     LOGIN:            'Cliente/Login.hbs',
-    CHECK_EMAIL:      'Cliente/CompruebaEmail.hbs',
+    FORGOT_PASSWORD:  'Cliente/ForgtoPassword.hbs',
     PASSWORD:         'Cliente/Password.hbs',
     PANEL:            'Cliente/PanelInicio.hbs',
     PERFIL:           'Cliente/MiPerfil.hbs',

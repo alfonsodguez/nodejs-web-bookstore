@@ -13,9 +13,9 @@ router.route('/Login')
 
 router.get("/ActivarCuenta", clienteController.getActivarCuenta)
 
-router.route('/CompruebaEmail')
-      .get(clienteController.getComprobarEmail)
-      .post(clienteController.postComprobarEmail)
+router.route('/ForgotPassword')
+      .get(clienteController.getForgotPassword)
+      .post(clienteController.postForgotPassword)
 
 router.route('/CambioPassword')
       .get(clienteController.getCambioPassword)
