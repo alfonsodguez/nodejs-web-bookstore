@@ -175,6 +175,7 @@ module.exports = {
                 const sessionId = req.session.id
 
                 _emailCambioPassword({ email, name: username, credsId, sessionId })
+                
                 res.redirect(URL.LOGIN)
             } else {
                 res.status(400).render(RENDER_PATH.FORGOT_PASSWORD, { layout: null, mensajeError: ERROR_MESSAGE.CHECK_EMAIL })
@@ -316,6 +317,6 @@ async function _emailCambioPassword({email, nombre, credsId, sessionId}) {
     try {
         await emailSevice.sendEmail({mensaje: cuerpoEmail})
     } catch (err) {
-        console.log('Fallo al enviar email de confirmación de registro', err)
+        console.log('Fallo al enviar email de cambio de contraseña', err)
     }
 }

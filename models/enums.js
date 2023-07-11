@@ -9,7 +9,7 @@ const RENDER_PATH = {
     REGISTRO:         'Cliente/Registro.hbs',
     REGISTRO_OK:      'Cliente/RegistroOK.hbs',
     LOGIN:            'Cliente/Login.hbs',
-    FORGOT_PASSWORD:  'Cliente/ForgtoPassword.hbs',
+    FORGOT_PASSWORD:  'Cliente/ForgotPassword.hbs',
     PASSWORD:         'Cliente/Password.hbs',
     PANEL:            'Cliente/PanelInicio.hbs',
     PERFIL:           'Cliente/MiPerfil.hbs',
