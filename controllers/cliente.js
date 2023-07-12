@@ -170,8 +170,8 @@ module.exports = {
             const credenciales = await _findCredenciales({ email })
         
             if (credenciales) {
-                const username = credenciales.username
-                const credsId = credenciales._id
+                const username  = credenciales.username
+                const credsId   = credenciales._id
                 const sessionId = req.session.id
 
                 _emailCambioPassword({ email, name: username, credsId, sessionId })

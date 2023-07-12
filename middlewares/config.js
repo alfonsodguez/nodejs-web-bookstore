@@ -10,7 +10,7 @@ module.exports = (app) => {
     app.use(cookieParser())
     app.use(express.urlencoded( {extended: true} ))
     app.use(express.json())
-    //-------- configuracion SESSION (cookie) -----------------
+    //-------- configuración cookie session -----------------
     app.use(session({
         secret: process.env.SECRET_SESSION,
         resave: false,
@@ -22,7 +22,7 @@ module.exports = (app) => {
             maxAge: 360000,
         }
     }))
-    //-------- configuracion view-engine handlebars -----------
+    //-------- configuración view-engine handlebars -----------
     app.set('views', __dirname + '/../views')
     app.engine('hbs', viewEngine.create({
         extname: 'hbs',

@@ -1,11 +1,11 @@
 const express = require('express')                           
 const mongoose = require('mongoose')
-const config = require('./config/middleware')  
+const middleware = require('./middlewares/config')
 const routing = require('./config/main')
 require('dotenv').config()
 
 const app = express()  
-config(app)    
+middleware(app)    
 routing(app)   
 app.listen(3000)    
 
