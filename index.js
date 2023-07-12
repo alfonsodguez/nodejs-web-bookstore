@@ -1,11 +1,11 @@
 const express = require('express')                           
 const mongoose = require('mongoose')
-const middleware = require('./middlewares/config')
+const config = require('./config/pipeline')
 const routing = require('./config/main')
 require('dotenv').config()
 
 const app = express()  
-middleware(app)    
+config(app)    
 routing(app)   
 app.listen(3000)    
 
