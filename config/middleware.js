@@ -12,7 +12,7 @@ module.exports = (app) => {
     app.use(express.json())
     //-------- configuracion SESSION (cookie) -----------------
     app.use(session({
-        secret: process.env.SECRET_SESSION_ID,
+        secret: process.env.SECRET_SESSION,
         resave: false,
         saveUninitialized: false,
         cookie: {
