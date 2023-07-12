@@ -5,6 +5,7 @@ const express = require('express')
 const viewEngine = require('express-handlebars')            
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
+const {errorHandler, logErrors}  = require('../middlewares')
 
 module.exports = (app) => {
     app.use(cookieParser())
@@ -45,5 +46,8 @@ module.exports = (app) => {
             }
         }                                                                          
     }).engine)
-    app.use('/public', express.static('public', { index:false, maxAge:'1d' } ))     
+    app.use('/public', express.static('public', { index:false, maxAge:'1d' } ))    
+    
+    app.use(logErrors)
+    app.use(errorHandler)
 }
