@@ -143,7 +143,7 @@ module.exports = {
 
                     cliente.pedidoActual = newPedido    
 
-                    //creamos prop. cliente en la session y añadimos datos cliente
+                    // creamos prop. cliente en la session y añadimos datos cliente
                     req.session.cliente = cliente   
 
                     res.redirect(URL.TIENDA)    
