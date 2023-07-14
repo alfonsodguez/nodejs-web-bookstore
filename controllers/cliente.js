@@ -9,6 +9,7 @@ const Municipio = require('../models/municipio')
 const Pedido = require('../models/pedido')
 const Libro = require('../models/libro')
 const {URL, RENDER_PATH, ERROR_MESSAGE} = require('../models/enums')
+const { DataNotFoundError } = require('../errors/custom')
 
 const GASTOS_ENVIO = 3
 
@@ -17,9 +18,13 @@ module.exports = {
         try {
             const provincias = await _findProvincias()
 
+            if (!provincias) {
+                throw new DataNotFoundError('Error al recuperar las provincias')
+            }
+
             res.status(200).render(RENDER_PATH.REGISTRO, { layout: null, listaProvincias: provincias })
         } catch (err) {
-            res.status(500).send()
+            next(err)
         }                  
     },
     postRegistro: async (req, res) => { 
