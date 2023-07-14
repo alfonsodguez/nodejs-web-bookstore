@@ -5,13 +5,13 @@ const express = require('express')
 const viewEngine = require('express-handlebars')            
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
-const {errorHandler, logErrors}  = require('../middlewares')
 
 module.exports = (app) => {
     app.use(cookieParser())
     app.use(express.urlencoded( {extended: true} ))
     app.use(express.json())
-    //-------- configuración cookie session -----------------
+    app.use('/public', express.static('public', { index:false, maxAge:'1d' } ))        
+    // configuración cookie session
     app.use(session({
         secret: process.env.SECRET_SESSION,
         resave: false,
@@ -23,7 +23,7 @@ module.exports = (app) => {
             maxAge: 360000,
         }
     }))
-    //-------- configuración view-engine handlebars -----------
+    // configuración view-engine handlebars
     app.set('views', __dirname + '/../views')
     app.engine('hbs', viewEngine.create({
         extname: 'hbs',
@@ -46,8 +46,4 @@ module.exports = (app) => {
             }
         }                                                                          
     }).engine)
-    app.use('/public', express.static('public', { index:false, maxAge:'1d' } ))    
-    
-    app.use(logErrors)
-    app.use(errorHandler)
 }

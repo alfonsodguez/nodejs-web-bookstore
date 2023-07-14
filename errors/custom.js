@@ -8,12 +8,16 @@ class BaseCustomError extends Error {
     }
 }
 
-class NotFoundError extends BaseCustomError {
+class SessionNotFoundError extends BaseCustomError {
     constructor(message, cause) {
         super()
         this.cause = cause
         this.message = message
-        this.name = 'NotFound'
+        this.name = 'SessionNotFoundError'
         this.status = 400
     }
+}
+
+module.exports = {
+    SessionNotFoundError
 }

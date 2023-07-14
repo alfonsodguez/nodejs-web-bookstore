@@ -5,16 +5,17 @@ const Pedido = require('../models/pedido')
 const Cliente = require('../models/cliente')
 const emailSevice = require('../models/email-service')
 const {URL, RENDER_PATH, ERROR_MESSAGE} = require('../models/enums')
+const {SessionNotFoundError} = require('../errors/custom')
 
 module.exports = {
-    addLibroPedido: async (req, res) => {        
-        try {
+    addLibroPedido: async (req, res, next) => { 
+        try {       
             //recuperar session y añadir libro expandido al pedido
             const libroId = req.params.id
-            const session = req.session 
+            const session = req.session.cliente
 
             if (!session) {
-                throw new Error(ERROR_MESSAGE.SESSION)
+                throw new SessionNotFoundError(ERROR_MESSAGE.SESSION)
             }
 
             const pedido = new Pedido(session.cliente.pedidoActual)
@@ -28,7 +29,7 @@ module.exports = {
 
             await _renderizarMostrarPedido({pedido, req, res})
         } catch (err) {
-            res.redirect(URL.LOGIN)
+            next(err)
         }
     },
     sumarCantidadPedido: async (req, res) => {
@@ -101,7 +102,7 @@ module.exports = {
             })
             .catch((err) => {
                 console.log('Error al guardar pedido y datos cliente', err)
-                res.status(400).send()
+                next(err)
             })
     }
 }
@@ -122,7 +123,7 @@ async function _renderizarMostrarPedido({pedido, req, res}) {
     
         res.status(200).render(RENDER_PATH.DETALLES_PEDIDO, { layout: null, pedido: pedido.toObject() }) 
     } catch (err) {
-        res.status(500).send()
+       next(err)
     }
 }
 
