@@ -20,16 +20,21 @@ const RENDER_PATH = {
 }
 
 const ERROR_MESSAGE= {
-    SERVER:      'Error interno del servidor',
-    LOGIN:       'Email o contraseña incorrectas',
-    ACTIVAR:     'Error al activar la cuenta',
-    REGISTRO:    'Error en el registro',
-    PROVINCIAS:  'Error al recuperar las provincias',
-    MUNICIPIOS:  'Error al recuperar los municipios',
-    CHECK_EMAIL: 'Error al validar el email',
-    PERFIL:      'Error al actualizar los datos personales',
-    LIBRO:       'Error al recuperar libros o materias',
-    SESSION:     'Session requerida'
+    SERVER:       'Error interno del servidor',
+    LOGIN:        'Email o contraseña incorrectas',
+    ACTIVAR:      'Error al activar la cuenta',
+    REGISTRO:     'Error en el registro',
+    PROVINCIAS:   'Error al recuperar las provincias',
+    PROVINCIA:    'Error: provincia no encontrada',
+    MUNICIPIOS:   'Error al recuperar los municipios',
+    MUNICIPIO:    'Error: municipio no encontrado',
+    CHECK_EMAIL:  'Error al validar el email',
+    PERFIL:       'Error al actualizar los datos personales',
+    LIBROS:       'Error al recuperar los libros',
+    LIBRO:        'Error al recuperar el libro',
+    MATERIAS:     'Error al recuperar las materias',
+    CREDENCIALES: 'Credenciales no validas',
+    SESSION:      'Session requerida'
 }
 
 module.exports = {

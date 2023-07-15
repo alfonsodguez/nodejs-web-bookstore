@@ -4,33 +4,29 @@ const Libro = require('../models/libro')
 const Pedido = require('../models/pedido')
 const Cliente = require('../models/cliente')
 const emailSevice = require('../models/email-service')
-const {URL, RENDER_PATH, ERROR_MESSAGE} = require('../models/enums')
-const {SessionNotFoundError} = require('../errors/custom')
+const { URL, RENDER_PATH, ERROR_MESSAGE } = require('../models/enums')
+const { SessionNotFoundError, DataNotFoundError } = require('../errors/custom')
 
 module.exports = {
     addLibroPedido: async (req, res, next) => { 
-        try {       
-            //recuperar session y añadir libro expandido al pedido
-            const libroId = req.params.id
-            const session = req.session.cliente
+        //recuperar session y añadir libro expandido al pedido
+        const libroId = req.params.id
+        const session = req.session.cliente
 
-            if (!session) {
-                throw new SessionNotFoundError(ERROR_MESSAGE.SESSION)
-            }
-
-            const pedido = new Pedido(session.cliente.pedidoActual)
-            const libro = pedido.articulos.find((libro) => String(libro.libroItem._id) === String(libroId))
-    
-            if (libro) {
-                libro.cantidadItem += 1
-            } else {
-                pedido.articulos.push({ libroItem: libroId, cantidadItem: 1 })
-            }
-
-            await _renderizarMostrarPedido({pedido, req, res})
-        } catch (err) {
-            next(err)
+        if (!session) {
+            throw new SessionNotFoundError(ERROR_MESSAGE.SESSION)
         }
+
+        const pedido = new Pedido(session.cliente.pedidoActual)
+        const libro = pedido.articulos.find((libro) => String(libro.libroItem._id) === String(libroId))
+
+        if (libro) {
+            libro.cantidadItem += 1
+        } else {
+            pedido.articulos.push({ libroItem: libroId, cantidadItem: 1 })
+        }
+
+        await _renderizarMostrarPedido({pedido, req, res})
     },
     sumarCantidadPedido: async (req, res) => {
         const libroId = req.params.id
@@ -114,17 +110,17 @@ function _eliminarLibroPedido({pedido, libroId}) {
 }
 
 async function _renderizarMostrarPedido({pedido, req, res}) {
-    try {
-        await pedido.CalcularTotalPedido()
-        pedido.articulos = await Libro.populate(pedido.articulos, { path: 'libroItem' })
-    
-        //actualizamos session 
-        req.session.cliente.pedidoActual = pedido      
-    
-        res.status(200).render(RENDER_PATH.DETALLES_PEDIDO, { layout: null, pedido: pedido.toObject() }) 
-    } catch (err) {
-       next(err)
+    await pedido.CalcularTotalPedido()
+    pedido.articulos = await Libro.populate(pedido.articulos, { path: 'libroItem' })
+
+    if (!pedido.articulos) {
+        throw new DataNotFoundError(ERROR_MESSAGE.LIBROS)
     }
+
+    //actualizamos session 
+    req.session.cliente.pedidoActual = pedido      
+
+    res.status(200).render(RENDER_PATH.DETALLES_PEDIDO, { layout: null, pedido: pedido.toObject() }) 
 }
 
 function _crearFacturaPDF({pedido}) {
@@ -149,7 +145,7 @@ function _crearFacturaPDF({pedido}) {
     })
 
     const tablaItemsPedido = {
-        headers: ["Titulo del Libro", "Precio del Libro", "Cantidad de libros", "Subtotal Libro"],
+        headers: ["Título del Libro", "Precio del Libro", "Cantidad de libros", "Subtotal libro"],
         rows: filas
     }
 
