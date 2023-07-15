@@ -2,30 +2,31 @@ const express = require('express')
 const router = express.Router()  
 const clienteController = require('../controllers/cliente')
 const {URL} = require('../models/enums')
+const errHandler = require('../lib/error-handler')
 
 router.route('/Registro')
-      .get(clienteController.getRegistro)
-      .post(clienteController.postRegistro)
+      .get(errHandler(clienteController.getRegistro))
+      .post(errHandler(clienteController.postRegistro))
 
 router.route('/Login')
-      .get(clienteController.getLogin)
-      .post(clienteController.postLogin) 
+      .get(errHandler(clienteController.getLogin))
+      .post(errHandler(clienteController.postLogin)) 
 
-router.get("/ActivarCuenta", clienteController.getActivarCuenta)
+router.get("/ActivarCuenta", errHandler(clienteController.getActivarCuenta))
 
 router.route('/ForgotPassword')
-      .get(clienteController.getForgotPassword)
-      .post(clienteController.postForgotPassword)
+      .get(errHandler(clienteController.getForgotPassword))
+      .post(errHandler(clienteController.postForgotPassword))
 
 router.route('/CambioPassword')
-      .get(clienteController.getCambioPassword)
-      .post(clienteController.postCambioPassword)
+      .get(errHandler(clienteController.getCambioPassword))
+      .post(errHandler(clienteController.postCambioPassword))
 
 router.all("/Panel/*", _checkSessionCliente, _cargarOpcionesPanelCliente) 
-router.get("/Panel/PanelInicio", clienteController.getPanelInicio)                                                                    
+router.get("/Panel/PanelInicio", errHandler(clienteController.getPanelInicio))                                                                    
 router.route('/Panel/MiPerfil')
-      .get(clienteController.getMiPerfil)
-      .post(clienteController.postMiPerfil)
+      .get(errHandler(clienteController.getMiPerfil))
+      .post(errHandler(clienteController.postMiPerfil))
 
 function _checkSessionCliente(req, res, next) {  
       if (req.session.cliente == undefined || req.session.cliente == null || req.session.cliente == '') {
