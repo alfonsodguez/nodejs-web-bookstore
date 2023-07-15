@@ -1,9 +1,9 @@
-const express = require('express')
-const router = express.Router()  
-const clienteController = require('../controllers/cliente')
-const { URL } = require('../models/enums')
-const errHandler = require('../lib/error-handler')
-const { SessionNotFoundError } = require('../errors/custom')
+const express             = require('express')
+const router              = express.Router()  
+const clienteController   = require('../controllers/cliente')
+const { URL }             = require('../models/enums')
+const errHandler          = require('../lib/error-handler')
+const checkSessionCliente = require('../middlewares/check-session')
 
 router.route('/Registro')
       .get(errHandler(clienteController.getRegistro))
@@ -23,20 +23,11 @@ router.route('/CambioPassword')
       .get(errHandler(clienteController.getCambioPassword))
       .post(errHandler(clienteController.postCambioPassword))
 
-router.all("/Panel/*", _checkSessionCliente, _cargarOpcionesPanelCliente) 
+router.all("/Panel/*", checkSessionCliente, _cargarOpcionesPanelCliente) 
 router.get("/Panel/PanelInicio", errHandler(clienteController.getPanelInicio))                                                                    
 router.route('/Panel/MiPerfil')
       .get(errHandler(clienteController.getMiPerfil))
       .post(errHandler(clienteController.postMiPerfil))
-
-function _checkSessionCliente(req, res, next) {  
-      if (req.session.cliente == undefined || req.session.cliente == null || req.session.cliente == '') {
-            throw new SessionNotFoundError('Cliente sin sesion')
-      } 
-      
-      req.cliente = req.session.cliente 
-      next()      
-}
 
 function _cargarOpcionesPanelCliente(req, res, next) { 
       const listaOpcionesPanel = [
