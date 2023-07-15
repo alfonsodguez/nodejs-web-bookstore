@@ -1,4 +1,4 @@
-const Municipio = require('../models/municipio')
+const Municipio         = require('../models/municipio')
 const { ERROR_MESSAGE } = require('../models/enums')
 
 module.exports = {
