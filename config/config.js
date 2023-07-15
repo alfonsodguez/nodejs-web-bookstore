@@ -1,10 +1,10 @@
 /**
  *  configuración modulos(middlewares) de la pipeline
  */
-const express = require('express')
-const viewEngine = require('express-handlebars')            
+const express      = require('express')
+const viewEngine   = require('express-handlebars')            
 const cookieParser = require('cookie-parser')
-const session = require('express-session')
+const session      = require('express-session')
 
 module.exports = (app) => {
     app.use(cookieParser())

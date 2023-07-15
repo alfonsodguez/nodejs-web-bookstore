@@ -1,6 +1,6 @@
-const Bluebird = require('bluebird')
-const Materia = require('../models/materia')
-const Libro = require('../models/libro')
+const Bluebird  = require('bluebird')
+const Materia   = require('../models/materia')
+const Libro     = require('../models/libro')
 const { RENDER_PATH, ERROR_MESSAGE } = require('../models/enums')
 const { DataNotFoundError } = require('../errors/custom')
 

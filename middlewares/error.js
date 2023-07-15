@@ -1,7 +1,7 @@
-const httpError = require('http-errors');
+const httpError       = require('http-errors');
 const { MulterError } = require('multer');
+const { URL }         = require('../models/enums');
 const { SessionNotFoundError, DataNotFoundError } = require('../errors/custom')
-const { URL } = require('../models/enums');
 
 /**
  * ErrorHandler middleware

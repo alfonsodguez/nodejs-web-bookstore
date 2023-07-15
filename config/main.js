@@ -2,10 +2,10 @@
  *  modulo de enrutamiento del servidor express 
  */
 const routeCliente = require('./routing-cliente')  
-const routeREST = require('./routing-REST')         
-const routeTienda = require('./routing-tienda')    
-const routePedido = require('./routing-pedido')    
-const routeHome = require('./routing-home')
+const routeREST    = require('./routing-REST')         
+const routeTienda  = require('./routing-tienda')    
+const routePedido  = require('./routing-pedido')    
+const routeHome    = require('./routing-home')
 
 module.exports = (app) => {  
     app.use('/',        routeHome)
