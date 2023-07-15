@@ -9,7 +9,7 @@ const Municipio    = require('../models/municipio')
 const Pedido       = require('../models/pedido')
 const Libro        = require('../models/libro')
 const { URL, RENDER_PATH, ERROR_MESSAGE } = require('../models/enums')
-const { DataNotFoundError } = require('../errors/custom')
+const { DataNotFoundError, InvalidPasswordError, CuentaInactivaError } = require('../errors/custom')
 
 const GASTOS_ENVIO = 3
 
@@ -91,23 +91,19 @@ module.exports = {
     getActivarCuenta: async (req, res) => {
         const email = req.params.email
 
-        try {
-            const credenciales = await _findCredenciales({ email })
+        const credenciales = await _findCredenciales({ email })
 
-            if (credenciales) {
-                await Cliente.findOneAndUpdate(
-                    { 'credenciales': credenciales._id }, 
-                    { 'cuentaActiva': true },
-                    { new: true } 
-                )
-
-                res.redirect(URL.LOGIN)
-            } else {
-                res.status(400).render(RENDER_PATH.REGISTRO_OK, { layout: null, mensajeError: ERROR_MESSAGE.ACTIVAR })
-            }
-        } catch (err) {
-            res.status(500).render(RENDER_PATH.REGISTRO_OK, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
+        if (!credenciales) {
+            throw new DataNotFoundError(ERROR_MESSAGE.ACTIVAR)
         }
+        
+        await Cliente.findOneAndUpdate(
+            { 'credenciales': credenciales._id }, 
+            { 'cuentaActiva': true },
+            { new: true } 
+        )
+
+        res.redirect(URL.LOGIN)
     },
     getLogin: (req, res) => {
         res.status(200).render(RENDER_PATH.LOGIN, { layout: null })
@@ -115,77 +111,65 @@ module.exports = {
     postLogin: async (req, res) => {          
         const { password, email } = req.body
         
-        try {
-            let view, mensajeError
-            const credenciales = await _findCredenciales({ email })
-            const isValidPassword = await bcrypt.compare(password, credenciales.hash)
-            
-            if (isValidPassword) {
-                const cliente = await Cliente
-                    .findOne({ credenciales: credenciales._id }) 
-                    .populate([ 
-                        { path: 'credenciales', model: Credenciales },
-                        { path: 'direcciones',  model: Direccion, populate: [
-                            { path: 'provincia', model: Provincia },
-                            { path: 'municipio', model: Municipio }
-                        ]},
-                        { path: 'historicoPedidos', model: Pedido, populate: { path: 'articulos.libroItem', model: Libro } }
-                    ])
-                    .lean()   
+        let view, mensajeError
+        const credenciales = await _findCredenciales({ email })
+        const isValidPassword = await bcrypt.compare(password, credenciales.hash)
 
-                const cuentaActiva = cliente.cuentaActiva
+        if (!isValidPassword && !credenciales) {
+            throw new InvalidPasswordError(ERROR_MESSAGE.LOGIN)
+        }
 
-                if (cuentaActiva) {
-                    const newPedido = new Pedido({
-                        gastosEnvio: GASTOS_ENVIO,
-                        subtotal: 0,
-                        total: 0,
-                        estado: 'pendiente',
-                        cliente: cliente._id,
-                        articulos: [] 
-                    })
+        const cliente = await Cliente
+            .findOne({ credenciales: credenciales._id }) 
+            .populate([ 
+                { path: 'credenciales', model: Credenciales },
+                { path: 'direcciones',  model: Direccion, populate: [
+                    { path: 'provincia', model: Provincia },
+                    { path: 'municipio', model: Municipio }
+                ]},
+                { path: 'historicoPedidos', model: Pedido, populate: { path: 'articulos.libroItem', model: Libro } }
+            ])
+            .lean()   
 
-                    cliente.pedidoActual = newPedido    
+        const cuentaActiva = cliente.cuentaActiva
 
-                    // creamos prop. cliente en la session y añadimos datos cliente
-                    req.session.cliente = cliente   
+        if (!cuentaActiva) {
+            throw new CuentaInactivaError(ERROR_MESSAGE.CUENTA_INACTIVA, email)
+        }
 
-                    res.redirect(URL.TIENDA)    
-                } else {
-                    view = RENDER_PATH.REGISTRO_OK
-                    mensajeError = ERROR_MESSAGE.ACTIVAR
-                }
-            } else {
-                view = RENDER_PATH.LOGIN
-                mensajeError = ERROR_MESSAGE.LOGIN
-            }
+        const newPedido = new Pedido({
+            gastosEnvio: GASTOS_ENVIO,
+            subtotal: 0,
+            total: 0,
+            estado: 'pendiente',
+            cliente: cliente._id,
+            articulos: [] 
+        })
 
-            res.status(400).render(view, { layout: null, mensajeError })
-        } catch (err) {
-            res.status(500).render(RENDER_PATH.LOGIN, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
-        }   
+        cliente.pedidoActual = newPedido    
+
+        // creamos prop. cliente en la session y añadimos datos cliente
+        req.session.cliente = cliente   
+
+        res.redirect(URL.TIENDA)    
     },
     getForgotPassword: (req, res) => {
         res.status(200).render(RENDER_PATH.FORGOT_PASSWORD, { layout: null })
     },
     postForgotPassword: async (req, res) => {
-        try {
-            const email = req.body.email
-            const credenciales = await _findCredenciales({ email })
-        
-            if (credenciales) {
-                const username  = credenciales.username
-                const credsId   = credenciales._id
-                const sessionId = req.session.id
+        const email = req.body.email
+        const credenciales = await _findCredenciales({ email })
+    
+        if (credenciales) {
+            const username  = credenciales.username
+            const credsId   = credenciales._id
+            const sessionId = req.session.id
 
-                _emailCambioPassword({ email, name: username, credsId, sessionId })
-                
-                res.redirect(URL.LOGIN)
-            } else {
-                res.status(400).render(RENDER_PATH.FORGOT_PASSWORD, { layout: null, mensajeError: ERROR_MESSAGE.CHECK_EMAIL })
-            }
-        } catch (err) {
-            res.status(500).render(RENDER_PATH.LOGIN, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
+            _emailCambioPassword({ email, name: username, credsId, sessionId })
+            
+            res.redirect(URL.LOGIN)
+        } else {
+            res.status(400).render(RENDER_PATH.FORGOT_PASSWORD, { layout: null, mensajeError: ERROR_MESSAGE.CHECK_EMAIL })
         }
     },
     getCambioPassword: async (req, res) => {
@@ -205,20 +189,16 @@ module.exports = {
         const password       = req.body.password
         const credencialesId = req.session.credsId 
 
-        try {
-            const saltRounds = 10
-            const salt = await bcrypt.genSalt(saltRounds)
-            const hash = await bcrypt.hash(password, salt)
+        const saltRounds = 10
+        const salt = await bcrypt.genSalt(saltRounds)
+        const hash = await bcrypt.hash(password, salt)
 
-            await Credenciales.updateOne(
-                { _id: credencialesId },
-                { $set: { hash: hash } }
-            )
+        await Credenciales.updateOne(
+            { _id: credencialesId },
+            { $set: { hash: hash } }
+        )
 
-            res.redirect(URL.LOGIN)
-        } catch (err) {
-            res.status(500).send()
-        }
+        res.redirect(URL.LOGIN)
     },
     getPanelInicio: (req, res) => {
         const cliente = req.cliente

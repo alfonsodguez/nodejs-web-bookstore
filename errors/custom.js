@@ -28,7 +28,29 @@ class DataNotFoundError extends BaseCustomError {
     }
 }
 
+class InvalidPasswordError extends BaseCustomError {
+    constructor(message, cause) {
+        super()
+        this.cause = cause,
+        this.message = message
+        this.name = 'InvalidPasswordError'
+        this.status = 400
+    }
+}
+
+class CuentaInactivaError extends BaseCustomError {
+    constructor(message, opcion) {
+        super()
+        this.opcion = opcion,
+        this.message = message
+        this.name = 'CuentaInactivaError'
+        this.status = 400
+    }
+}
+
 module.exports = {
     SessionNotFoundError,
-    DataNotFoundError
+    DataNotFoundError,
+    InvalidPasswordError,
+    CuentaInactivaError,
 }
