@@ -15,17 +15,13 @@ const GASTOS_ENVIO = 3
 
 module.exports = { 
     getRegistro: async (req, res) => {                
-        try {
-            const provincias = await _findProvincias()
+        const provincias = await _findProvincias()
 
-            if (!provincias) {
-                throw new DataNotFoundError('Error al recuperar las provincias')
-            }
+        if (!provincias) {
+            throw new DataNotFoundError('Error al recuperar las provincias')
+        }
 
-            res.status(200).render(RENDER_PATH.REGISTRO, { layout: null, listaProvincias: provincias })
-        } catch (err) {
-            next(err)
-        }                  
+        res.status(200).render(RENDER_PATH.REGISTRO, { layout: null, listaProvincias: provincias })  
     },
     postRegistro: async (req, res) => { 
         const { nombre, apellidos, nif, telefono, username, email, password, calle, cp, codProvincia, codMunicipio } = req.body
