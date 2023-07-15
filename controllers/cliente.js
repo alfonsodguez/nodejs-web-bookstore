@@ -1,24 +1,24 @@
-const bcrypt = require('bcrypt')
-const mongoose = require('mongoose')
-const emailSevice = require('../models/email-service')
-const Cliente = require('../models/cliente')
+const bcrypt       = require('bcrypt')
+const mongoose     = require('mongoose')
+const emailSevice  = require('../models/email-service')
+const Cliente      = require('../models/cliente')
 const Credenciales = require('../models/credenciales')
-const Direccion = require('../models/direccion')
-const Provincia = require('../models/provincia')
-const Municipio = require('../models/municipio')
-const Pedido = require('../models/pedido')
-const Libro = require('../models/libro')
-const {URL, RENDER_PATH, ERROR_MESSAGE} = require('../models/enums')
+const Direccion    = require('../models/direccion')
+const Provincia    = require('../models/provincia')
+const Municipio    = require('../models/municipio')
+const Pedido       = require('../models/pedido')
+const Libro        = require('../models/libro')
+const { URL, RENDER_PATH, ERROR_MESSAGE } = require('../models/enums')
 const { DataNotFoundError } = require('../errors/custom')
 
 const GASTOS_ENVIO = 3
 
 module.exports = { 
     getRegistro: async (req, res) => {                
-        const provincias = await _findProvincias()
+        const provincias = undefined
 
         if (!provincias) {
-            throw new DataNotFoundError('Error al recuperar las provincias')
+            throw new DataNotFoundError(ERROR_MESSAGE.PROVINCIAS)
         }
 
         res.status(200).render(RENDER_PATH.REGISTRO, { layout: null, listaProvincias: provincias })  
@@ -29,61 +29,64 @@ module.exports = {
         const direccionId = new mongoose.Types.ObjectId
         const credenciaslesId = new mongoose.Types.ObjectId
 
-        try {
-            const provincia = await Provincia.findOne({ codProvincia }).select('_id').lean()
-            const municipio = await Municipio.findOne({ codProvincia, codMunicipio }).select('_id').lean()
-            
-            const insertCliente = Cliente({ 
-                _id: clienteId,
-                nombre,
-                apellidos,
-                nif,
-                cuentaActiva: false,
-                telefono,
-                credenciales: credenciaslesId,
-                direcciones: [ direccionId ],  
-                historicoPedidos: [], 
-                imagenAvatar: ''
-            }).save()
-
-            const saltRounds = 10
-            const salt = await bcrypt.genSalt(saltRounds)
-            const hash = await bcrypt.hash(password, salt)
-    
-            const insertCredenciales = Credenciales({ 
-                _id: credenciaslesId,
-                username, 
-                email,
-                hash,
-            }).save() 
-    
-            const insertDirecciones = Direccion({
-                _id: direccionId,
-                clienteId,
-                calle,
-                cp,
-                provincia: provincia._id,
-                municipio: municipio._id, 
-                esPrincipal: true,
-            }).save() 
-    
-            // resolvemos las querys
-            Promise
-                .all([ insertCliente, insertCredenciales, insertDirecciones ])  
-                .then(async () => { 
-                    await _emailActivacionCuenta({ email, nombre })
-    
-                    res.status(200).render(RENDER_PATH.REGISTRO_OK, { layout: null }) 
-                }) 
-                .catch(async (err) => { 
-                    const provincias = await _findProvincias()
-
-                    res.status(400).render(RENDER_PATH.REGISTRO, { layout: null, listaProvincias: provincias, mensajeError: ERROR_MESSAGE.REGISTRO })
-                })
-
-        } catch (err) {
-            res.status(500).render(RENDER_PATH.REGISTRO, { layout: null, mensajeError: ERROR_MESSAGE.SERVER })
+        const provincia = await Provincia.findOne({ codProvincia }).select('_id').lean()
+        const municipio = await Municipio.findOne({ codProvincia, codMunicipio }).select('_id').lean()
+        
+        if (!provincia) {
+            throw new DataNotFoundError(ERROR_MESSAGE.PROVINCIA)
         }
+
+        if (!municipio) {
+            throw new DataNotFoundError(ERROR_MESSAGE.MUNICIPIO)
+        }
+        
+        const insertCliente = Cliente({ 
+            _id: clienteId,
+            nombre,
+            apellidos,
+            nif,
+            cuentaActiva: false,
+            telefono,
+            credenciales: credenciaslesId,
+            direcciones: [ direccionId ],  
+            historicoPedidos: [], 
+            imagenAvatar: ''
+        }).save()
+
+        const saltRounds = 10
+        const salt = await bcrypt.genSalt(saltRounds)
+        const hash = await bcrypt.hash(password, salt)
+
+        const insertCredenciales = Credenciales({ 
+            _id: credenciaslesId,
+            username, 
+            email,
+            hash,
+        }).save() 
+
+        const insertDirecciones = Direccion({
+            _id: direccionId,
+            clienteId,
+            calle,
+            cp,
+            provincia: provincia._id,
+            municipio: municipio._id, 
+            esPrincipal: true,
+        }).save() 
+
+        // resolvemos las querys
+        Promise
+            .all([ insertCliente, insertCredenciales, insertDirecciones ])  
+            .then(async () => { 
+                await _emailActivacionCuenta({ email, nombre })
+
+                res.status(200).render(RENDER_PATH.REGISTRO_OK, { layout: null }) 
+            }) 
+            .catch(async (err) => { 
+                const provincias = await _findProvincias()
+
+                res.status(400).render(RENDER_PATH.REGISTRO, { layout: null, listaProvincias: provincias, mensajeError: ERROR_MESSAGE.REGISTRO })
+            })
     },
     getActivarCuenta: async (req, res) => {
         const email = req.params.email
