@@ -1,25 +1,10 @@
 const express = require("express")
-const multer = require('multer') 
 const router = express.Router()
 const restController = require('../controllers/rest')
+const errHandler = require('../lib/error-handler')
+const upload = require('../middlewares/multer')
 
-const options = {
-    destination: function (req, file, callback) { 
-        const pathImgSubidas =  __dirname + '/../uploads/'
-        
-        callback(null, pathImgSubidas) 
-    },
-    filename: function (req, file, callback) {         
-        const prefix = Date.now() + '-' + Math.round(Math.random() * 1E9)  
-        const fileName = file.originalname.split('.')[0] + '-' + prefix + '.' + file.originalname.split('.')[1]
-        
-        callback(null, fileName)   
-    }
-}
-
-const _upload = multer({ storage: multer.diskStorage(options) })
-
-router.get('/getMunicipios/:codPro', restController.getMunicipios) 
-router.post('/uploadImagen', _upload.single('imagen'), restController.uploadImagen)   // 'imagen' es el nombre de la variable a la cual pasas el fichero en la pet ajax en MiPerfil.hbs
+router.get('/getMunicipios/:codPro', errHandler(restController.getMunicipios)) 
+router.post('/uploadImagen',         errHandler(upload.single('imagen')), restController.uploadImagen)   // 'imagen' es el nombre de la variable que asignamos al fichero al realizar la pet ajax en '../public/js/subirAvatar'
 
 module.exports = router
