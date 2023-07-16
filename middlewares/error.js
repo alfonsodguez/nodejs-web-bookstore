@@ -4,11 +4,10 @@ const { URL, RENDER_PATH } = require('../models/enums');
 const { SessionNotFoundError, DataNotFoundError, InvalidPasswordError, CuentaInactivaError, InvalidEmailError } = require('../errors/custom')
 
 /**
- * ErrorHandler middleware
+ * Error handling middleware
  */
 module.exports = (app) => {       
     app.use(function(err, req, res, next) {
-      console.log("Middleware: Error Handling")
 
       if (res.headersSent) {
         return next(err)
