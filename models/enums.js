@@ -35,7 +35,8 @@ const ERROR_MESSAGE= {
     MATERIAS:        'Error al recuperar las materias',
     CREDENCIALES:    'Credenciales no validas',
     SESSION:         'Session requerida',
-    CUENTA_INACTIVA: 'CUENTA_INACTIVA'
+    CUENTA_INACTIVA: 'CUENTA_INACTIVA',
+    CLIENTE:         'Error: cliente no encontrado',
 }
 
 module.exports = {

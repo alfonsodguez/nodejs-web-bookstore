@@ -9,7 +9,7 @@ const Municipio    = require('../models/municipio')
 const Pedido       = require('../models/pedido')
 const Libro        = require('../models/libro')
 const { URL, RENDER_PATH, ERROR_MESSAGE } = require('../models/enums')
-const { DataNotFoundError, InvalidPasswordError, CuentaInactivaError } = require('../errors/custom')
+const { DataNotFoundError, InvalidPasswordError, CuentaInactivaError, InvalidEmailError } = require('../errors/custom')
 
 const GASTOS_ENVIO = 3
 
@@ -131,7 +131,11 @@ module.exports = {
             ])
             .lean()   
 
-        const cuentaActiva = cliente.cuentaActiva
+        if (!cliente) {
+            throw new DataNotFoundError(ERROR_MESSAGE.CLIENTE)
+        }
+
+        const cuentaActiva = cliente?.cuentaActiva
 
         if (!cuentaActiva) {
             throw new CuentaInactivaError(ERROR_MESSAGE.CUENTA_INACTIVA, email)
@@ -161,29 +165,30 @@ module.exports = {
         const credenciales = await _findCredenciales({ email })
     
         if (credenciales) {
-            const username  = credenciales.username
-            const credsId   = credenciales._id
-            const sessionId = req.session.id
-
-            _emailCambioPassword({ email, name: username, credsId, sessionId })
-            
-            res.redirect(URL.LOGIN)
-        } else {
-            res.status(400).render(RENDER_PATH.FORGOT_PASSWORD, { layout: null, mensajeError: ERROR_MESSAGE.CHECK_EMAIL })
+            throw new InvalidEmailError(ERROR_MESSAGE.CHECK_EMAIL)
         }
+
+        const username  = credenciales.username
+        const credsId   = credenciales._id
+        const sessionId = req.session.id
+
+        _emailCambioPassword({ email, name: username, credsId, sessionId })
+            
+        res.redirect(URL.LOGIN)
     },
     getCambioPassword: async (req, res) => {
         const sessionId      = req.query.id
         const credencialesId = req.query.credsid
         const id             = req.session.id
 
-        if (sessionId === id) {
-                req.session.credsId = credencialesId
-
-                res.status(200).render(RENDER_PATH.PASSWORD, { layout: null })
-        } else {
-            res.status(500).send()
+        if (sessionId != id) {
+            throw new Error()
         }
+
+        req.session.credsId = credencialesId
+
+        res.status(200).render(RENDER_PATH.PASSWORD, { layout: null })
+
     },
     postCambioPassword: async (req, res) => {
         const password       = req.body.password

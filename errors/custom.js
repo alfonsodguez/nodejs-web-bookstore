@@ -38,6 +38,16 @@ class InvalidPasswordError extends BaseCustomError {
     }
 }
 
+class InvalidEmailError extends BaseCustomError {
+    constructor(message, cause) {
+        super()
+        this.cause = cause
+        this.message = message
+        this.name = 'InvalidEmailError'
+        this.status = 400
+    }
+}
+
 class CuentaInactivaError extends BaseCustomError {
     constructor(message, opcion) {
         super()
@@ -53,4 +63,5 @@ module.exports = {
     DataNotFoundError,
     InvalidPasswordError,
     CuentaInactivaError,
+    InvalidEmailError,
 }

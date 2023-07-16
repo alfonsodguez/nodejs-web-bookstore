@@ -1,7 +1,7 @@
-const httpError       = require('http-errors');
-const { MulterError } = require('multer');
-const { URL, RENDER_PATH }         = require('../models/enums');
-const { SessionNotFoundError, DataNotFoundError, InvalidPasswordError, CuentaInactivaError } = require('../errors/custom')
+const httpError            = require('http-errors');
+const { MulterError }      = require('multer');
+const { URL, RENDER_PATH } = require('../models/enums');
+const { SessionNotFoundError, DataNotFoundError, InvalidPasswordError, CuentaInactivaError, InvalidEmailError } = require('../errors/custom')
 
 /**
  * ErrorHandler middleware
@@ -18,6 +18,8 @@ module.exports = (app) => {
         res.redirect(URL.LOGIN)
       } else if (err instanceof InvalidPasswordError) {
         res.status(err.status || 400).render(RENDER_PATH.LOGIN, { layout: null, mensajeError: err.message })
+      } else if (err instanceof InvalidEmailError) { 
+        res.status(err.status || 400).render(RENDER_PATH.FORGOT_PASSWORD, { layout: null, mensajeError: err.message })
       } else if (err instanceof CuentaInactivaError) { 
         const url = URL.ACTIVAR_CUENTA + err.option 
         res.redirect(url)

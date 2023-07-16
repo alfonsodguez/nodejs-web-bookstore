@@ -8,9 +8,9 @@ const session      = require('express-session')
 
 module.exports = (app) => {
     app.use(cookieParser())
-    app.use(express.urlencoded( {extended: true} ))
+    app.use(express.urlencoded( { extended: true } ))
     app.use(express.json())
-    app.use('/public', express.static('public', { index:false, maxAge:'1d' } ))        
+    app.use('/public', express.static('public', { index: false, maxAge: '1d' } ))        
     // configuración cookie session
     app.use(session({
         secret: process.env.SECRET_SESSION,
