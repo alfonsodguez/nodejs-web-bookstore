@@ -15,7 +15,7 @@ const GASTOS_ENVIO = 3
 
 module.exports = { 
     getRegistro: async (req, res) => {                
-        const provincias = undefined
+        const provincias = await _findProvincias()
 
         if (!provincias) {
             throw new DataNotFoundError(ERROR_MESSAGE.PROVINCIAS)
@@ -25,8 +25,8 @@ module.exports = {
     },
     postRegistro: async (req, res) => { 
         const { nombre, apellidos, nif, telefono, username, email, password, calle, cp, codProvincia, codMunicipio } = req.body
-        const clienteId = new mongoose.Types.ObjectId
-        const direccionId = new mongoose.Types.ObjectId
+        const clienteId       = new mongoose.Types.ObjectId
+        const direccionId     = new mongoose.Types.ObjectId
         const credenciaslesId = new mongoose.Types.ObjectId
 
         const provincia = await Provincia.findOne({ codProvincia }).select('_id').lean()
@@ -188,7 +188,6 @@ module.exports = {
         req.session.credsId = credencialesId
 
         res.status(200).render(RENDER_PATH.PASSWORD, { layout: null })
-
     },
     postCambioPassword: async (req, res) => {
         const password       = req.body.password
@@ -222,7 +221,7 @@ module.exports = {
         res.status(200).render(RENDER_PATH.PERFIL, { cliente, opcionesPanel })
     },
     postMiPerfil: async (req, res) => {
-        const cliente = req.cliente // session
+        const cliente       = req.cliente // session
         const opcionesPanel = req.opcionesPanelPerfil
         
         for (const prop in req.body) {
@@ -232,10 +231,10 @@ module.exports = {
             cliente[prop] = req.body[prop]
         }
         
-        const clienteId = cliente._id
+        const clienteId      = cliente._id
         const credencialesId = cliente.credenciales._id
-        const email = cliente.credenciales.email
-        const login = cliente.credenciales.login
+        const email          = cliente.credenciales.email
+        const login          = cliente.credenciales.login
 
         const updateCliente      = Cliente.updateOne({ _id: clienteId }, cliente)
         const updateCredenciales = Credenciales.updateOne({ _id: credencialesId }, { login, email })         

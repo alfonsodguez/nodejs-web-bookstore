@@ -23,7 +23,7 @@ module.exports = (app) => {
         const url = URL.ACTIVAR_CUENTA + err.option 
         res.redirect(url)
       } else if (err instanceof DataNotFoundError) { 
-        // TODO: redireccionar a una pagina de error
+        // TODO: redireccionar a una página de error
         res.status(err.status || 404).json({ name: err.name, message: err.message })
       } else if (err instanceof MulterError) {
         res.status(404).json({ name: err.name, message: err.message, cause: err.code })
