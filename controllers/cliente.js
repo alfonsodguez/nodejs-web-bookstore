@@ -8,6 +8,7 @@ const Provincia    = require('../models/provincia')
 const Municipio    = require('../models/municipio')
 const Pedido       = require('../models/pedido')
 const Libro        = require('../models/libro')
+const cache        = require('../lib/cache')
 const { URL, RENDER_PATH, ERROR_MESSAGE } = require('../models/enums')
 const { DataNotFoundError, InvalidPasswordError, CuentaInactivaError, InvalidEmailError } = require('../errors/custom')
 
@@ -254,7 +255,16 @@ module.exports = {
 } 
 
 async function _findProvincias() {
-    return Provincia.find().sort({ nombre: 1 }).lean()  // utilizar lean ya que handlebas no admite propiedades de mongoose
+    const key = 'prov'
+    let provincias = cache.get(key)
+
+    if (!provincias) {
+        provincias = await Provincia.find().sort({ nombre: 1 }).lean()  // utilizar lean ya que handlebas no admite propiedades de mongoose
+
+        cache.set(key, provincias)
+    }
+
+    return provincias
 }
 
 async function _findCredenciales({email}) {
