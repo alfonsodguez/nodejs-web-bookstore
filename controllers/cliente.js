@@ -112,7 +112,6 @@ module.exports = {
     postLogin: async (req, res) => {          
         const { password, email } = req.body
         
-        let view, mensajeError
         const credenciales = await _findCredenciales({ email })
         const isValidPassword = await bcrypt.compare(password, credenciales.hash)
 
